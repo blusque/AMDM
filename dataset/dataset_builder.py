@@ -5,6 +5,7 @@ import dataset.humanml3d_rev_dataset as humanml3d_rev_dataset
 import dataset.lafan1_dataset as lafan1_dataset
 import dataset.lafan1_hetero_dataset as lafan1_hetero_dataset
 import dataset.style100_dataset as style100_dataset
+import dataset.motionvivid_dataset as motionvivid_dataset
 import yaml
 
 def build_dataset(config_file, load_full_dataset):
@@ -34,6 +35,8 @@ def build_dataset(config_file, load_full_dataset):
         dataset = lafan1_hetero_dataset.LAFAN1_hetero(config)
     elif (dataset_class_name == style100_dataset.STYLE100.NAME):
         dataset = style100_dataset.STYLE100(config)
+    elif (dataset_class_name == motionvivid_dataset.MotionVivid.NAME):
+        dataset = motionvivid_dataset.MotionVivid(config)
     else:
         assert(False), "Unsupported dataset class: {}".format(dataset_class_name)
     return dataset
