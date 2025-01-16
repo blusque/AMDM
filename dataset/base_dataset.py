@@ -133,8 +133,8 @@ class BaseMotionData(data.Dataset):
                     self.valid_range = data['valid_range']
                     self.file_lst = data['file_lst']
                 
-                if 'labels' in data.keys():
-                    self.labels= data['labels']
+                    if 'labels' in data.keys():
+                        self.labels= data['labels']
                 
             else:
                 file_paths = self.get_motion_fpaths()
@@ -591,6 +591,8 @@ class BaseMotionData(data.Dataset):
             joint_offset = frames[0,self.offset_dim_lst[0]:].reshape(-1,3)
         else:
             joint_offset = self.joint_offset
+        if len(joint_offset.shape) == 3:
+            joint_offset = joint_offset[0]
         #joint_offset = joint_offset[None,...].repeat(joint_orientations.shape[0],0)
         
         for i in range(self.num_jnt):

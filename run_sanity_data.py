@@ -5,15 +5,16 @@ import dataset.util.plot as plot_util
 
 
 def get_data_from_dataset():
-    #config_file = 'config/model/amdm_lafan1_single.yaml'
+    config_file = 'config/model/amdm_lafan1.yaml'
     #config_file = 'config/model/amdm_100style.yaml'
     #config_file = 'output/base/amdm_lafan1/config.yaml'
 
-    config_file = 'output/base/amdm_humanml3d/config.yaml'
-    dataset = dataset_builder.build_dataset(config_file, load_full_dataset=False)
+    # config_file = 'output/base/amdm_humanml3d/config.yaml'
+    dataset = dataset_builder.build_dataset(config_file, load_full_dataset=True)
     
     #data_file_name = 'data/100STYLE/OnHeels/OnHeels_FW.bvh' #'data/LAFAN1/dance1_subject1.bvh'
-    data_file_name = 'data/HumanML3D/new_joint_vecs/009040.npy'
+    data_file_name = 'data/LAFAN1/dance1_subject1.bvh'
+    # data_file_name = 'data/HumanML3D/new_joint_vecs/009040.npy'
     # starting index:
     start_frame_index = 0 #3188 #cartwheel
     num_frame = 200

@@ -67,8 +67,8 @@ class TargetEnv(base_env.EnvBase):
             self.root_facing.fill_(0)
             self.root_xz.fill_(0)
             self.reward.fill_(0)
-            self.timestep.fill_(0)
-            self.substep.fill_(0)
+            self.timestep = 0
+            self.substep = 0
             self.done.fill_(False)
 
             self.reset_target()
