@@ -75,6 +75,7 @@ class JoystickEnv(target_env.TargetEnv):
                 self.target_direction = -np.pi/3
             #self.target_direction -= np.pi/2
             self.target.copy_(self.root_xz)
+            self.timestep = int(self.timestep)
             self.joystick_arr[:,self.timestep,0] = self.target_speed 
             self.joystick_arr[:,self.timestep,1] = self.target_direction 
 

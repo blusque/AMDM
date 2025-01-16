@@ -76,24 +76,20 @@ if __name__ == '__main__':
     #start_index = 322 #   
     
     # file name:
-    data_file_name = './data/100STYLE/BeatChest/BeatChest_FR.bvh'#'data/LAFAN1/dance1_subject1.bvh'
+    # data_file_name = './data/100STYLE/BeatChest/BeatChest_FR.bvh'
+    data_file_name = './data/MotionVivid/s001_angry_fw.bvh'
     # starting index:
-    start_index = 1500 #3188 #cartwheel
+    start_index = 0 #3188 #cartwheel
 
-<<<<<<< HEAD:get_base_bvh.py
-    step_default = 1000
-    num_trial_default = 20
-    model_name = 'amdm_lafan1_5'
-=======
     # num of frames:
     step_default = 1000
->>>>>>> 825c6b1 (dataset update):gen_base_bvh.py
 
     # num of clips
     num_trial_default = 6
 
     # path of your checkpoint directory
-    model_name = 'amdm_100style' #'amdm_100style' #
+    # model_name = 'amdm_100style'
+    model_name = 'amdm_motionvivid'
     par_path = 'output/base/'
     model_config_file = '{}/{}/config.yaml'.format(par_path, model_name)
    

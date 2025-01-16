@@ -133,8 +133,8 @@ class BaseMotionData(data.Dataset):
                     self.valid_range = data['valid_range']
                     self.file_lst = data['file_lst']
                 
-                if 'labels' in data.keys():
-                    self.labels= data['labels']
+                    if 'labels' in data.keys():
+                        self.labels = data['labels']
                 
             else:
                 file_paths = self.get_motion_fpaths()
@@ -213,13 +213,9 @@ class BaseMotionData(data.Dataset):
                             vel_dim_lst = self.vel_dim_lst,
                             angle_dim_lst = self.angle_dim_lst,
                             offset_dim_lst = self.offset_dim_lst,
-                            height_index = self.height_index,
-                            
-                            
-                        )
+                            height_index = self.height_index)
             
     
-            
             self.test_valid_idx_full = []
             for i_f, (idx_st, idx_ed) in enumerate(self.valid_range):
                 self.test_valid_idx_full += range(idx_st, idx_ed - self.test_num_steps)
@@ -589,9 +585,13 @@ class BaseMotionData(data.Dataset):
        
         if self.use_offset:
             joint_offset = frames[0,self.offset_dim_lst[0]:].reshape(-1,3)
+            # joint_offset = frames[0, 0:].reshape(-1,3)
         else:
             joint_offset = self.joint_offset
         #joint_offset = joint_offset[None,...].repeat(joint_orientations.shape[0],0)
+
+        if len(joint_offset.shape) == 3:
+            joint_offset = joint_offset[0]
         
         for i in range(self.num_jnt):
             local_rotation = ang_frames[:, self.data_rot_dim*i: self.data_rot_dim*(i+1)]

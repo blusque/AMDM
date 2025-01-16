@@ -18,6 +18,8 @@ import util.arg_parser as arg_parser
 import util.rand_util as rand_util
 import util.mp_util as mp_util
 
+import time
+
 def set_np_formatting():
     np.set_printoptions(edgeitems=30, infstr='inf',
                         linewidth=4000, nanstr='nan', precision=2,
@@ -77,11 +79,11 @@ def test(agent):
     return 
 
 def test_no_agent(env):
-
     env.reset()
     env.reset_initial_frames()
     with EpisodeRunner(env) as runner:
         while not runner.done:
+            start = time.time()
             frame = env.get_next_frame()
             for i in range(env.frame_skip):
                 _, reward, done, info = env.calc_env_state(frame)
@@ -89,6 +91,8 @@ def test_no_agent(env):
                 if done.any():
                     reset_indices = env.parallel_ind_buf.masked_select(done.squeeze())
                     env.reset_index(reset_indices)
+            end = time.time()
+            print('time:', end - start)
                 #try:
                 #    if info.get("reset").all():
                 #        env.reset()
