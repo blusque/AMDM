@@ -45,7 +45,7 @@ data:
     dataset_name: "MOTIONVIVID"
     path: "./data/MotionVivid/"
     dataset_class_name: "MOTIONVIVID"
-    subject_name: 's001'
+    subject_name: 's004'
     data_fps: 30
     root_rot_offset: 180
     min_motion_len: 0
