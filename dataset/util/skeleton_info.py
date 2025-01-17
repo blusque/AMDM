@@ -265,23 +265,23 @@ MOTIONVIVID_end_eff = [
     [],
     [],
     [],
-    [0.000000, 0.059353, 0.000000],
+    [0.0, 0.0, 0.0],
     [],
     [],
     [],
-    [0.000000, 0.000000, 0.015038],
+    [0.0, 0.0, 0.0],
     [],
     [],
     [],
-    [-0.001344, 0.000000, 0.014891],
-    [],
-    [], 
-    [],
-    [-0.003010, 0.000000, 0.013461],
-    [],
+    [0.0, 0.0, 0.0],
     [],
     [], 
-    [0.001229, 0.000000, 0.013617]
+    [],
+    [0.0, 0.0, 0.0],
+    [],
+    [],
+    [], 
+    [0.0, 0.0, 0.0]
 ]
 
 
@@ -302,6 +302,6 @@ skel_dict = {
             'LAFAN1':{'links': LAFAN1_links, 'end_eff':LAFAN1_end_eff,  'num_joint':22, 'euler_rotate_order':'ZYX', 'head_idx':[12,13],'hand_idx':[17,21],'foot_idx':[3,4,7,8],  'toe_idx':[4,8], 'fps':60, 'unit':'meter','st_angle_offset':-180, 'transmap':LAFAN1_transmap, 'rev_transmap':LAFAN1_rev_transmap},
             'AMASS':{'offset_joint':SMPL_joint_offset,'links': SMPL_links, 'name_joint':SMPL_name_joint, 'end_eff':SMPL_end_eff,  'num_joint':22, 'euler_rotate_order':'ZYX', 'root_idx':0,  'head_idx':[12,15], 'hand_idx':[20,21], 'foot_idx':[7,8,10,11], 'fps':30, 'toe_idx':[10,11],'st_angle_offset':90, 'unit':'cm'},
             'HumanML3D':{'offset_joint':SMPL_joint_offset, 'links': SMPL_links, 'name_joint':SMPL_name_joint, 'end_eff':SMPL_end_eff, 'num_joint':22, 'euler_rotate_order':'ZYX','root_idx':0,  'head_idx':[12,15], 'hand_idx':[20,21], 'foot_idx':[7,8,10,11], 'fps':30, 'toe_idx':[10,11],'st_angle_offset':90, 'unit':'cm'},
-            'MOTIONVIVID':{'name_joint': MOTIONVIVID_name_joint, 'num_joint':24, 'euler_rotate_order':'XYZ','root_idx':0,  'head_idx':[5,6,7], 'hand_idx':[11,15], 'foot_idx':[18,19,22,23], 'fps':30, 'toe_idx':[19,23], 'fps':30, 'st_angle_offset':90, 'unit':'meter'}
+            'MOTIONVIVID':{'name_joint': MOTIONVIVID_name_joint, 'end_eff': MOTIONVIVID_end_eff, 'num_joint':24, 'euler_rotate_order':'XYZ','root_idx':0,  'head_idx':[5,6,7], 'hand_idx':[11,15], 'foot_idx':[18,19,22,23], 'fps':30, 'toe_idx':[19,23], 'fps':30, 'st_angle_offset':90, 'unit':'cm'}
             }
 

@@ -14,6 +14,7 @@ def get_data_from_dataset():
     dataset = dataset_builder.build_dataset(config_file, load_full_dataset=True)
     
     data_file_name = 'data/MotionVivid/s004_angry_fw.bvh'
+    # data_file_name = 'data/LAFAN1/aiming1_subject4.bvh'
     # data_file_name = 'data/100STYLE/OnHeels/OnHeels_FW.bvh'
     # data_file_name = 'data/HumanML3D/new_joint_vecs/009040.npy'
     # starting index:
