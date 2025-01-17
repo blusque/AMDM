@@ -588,6 +588,8 @@ class BaseMotionData(data.Dataset):
             # joint_offset = frames[0, 0:].reshape(-1,3)
         else:
             joint_offset = self.joint_offset
+        if len(joint_offset.shape) == 3:
+            joint_offset = joint_offset[0]
         #joint_offset = joint_offset[None,...].repeat(joint_orientations.shape[0],0)
 
         if len(joint_offset.shape) == 3:

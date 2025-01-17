@@ -133,6 +133,7 @@ class PPOAgent(object):
 
     def train_controller(self, out_model_file, int_output_dir):
         obs = self.env.reset()
+        # obs = self.env.reset_index()
         self.rollouts.observations[0].copy_(obs)
         self.rollouts.to(self.device)
         num_samples = 0
