@@ -231,6 +231,8 @@ class BaseMotionData(data.Dataset):
             print('data shape:{}'.format(self.motion_flattened.shape))
         
         self.joint_offset = unit_util.unit_conver_scale(self.unit) *  np.array(self.joint_offset)
+        if len(self.joint_offset.shape) == 3:
+            self.joint_offset = self.joint_offset[0]
         self.joint_parent = bvh_util.get_parent_from_link(self.links)
 
     def load_new_data(self, path):
@@ -588,8 +590,6 @@ class BaseMotionData(data.Dataset):
             # joint_offset = frames[0, 0:].reshape(-1,3)
         else:
             joint_offset = self.joint_offset
-        if len(joint_offset.shape) == 3:
-            joint_offset = joint_offset[0]
         #joint_offset = joint_offset[None,...].repeat(joint_orientations.shape[0],0)
 
         if len(joint_offset.shape) == 3:
