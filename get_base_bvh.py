@@ -15,7 +15,8 @@ def gen_bvh(model_config_file, model_state_path, out_path, data_file_name, start
     data_mode = 'angle' #position,velocity
     root_offset = np.array([0,0,0]) #1200
 
-    dataset = dataset_builder.build_dataset(model_config_file, load_full_dataset=False)
+    dataset = dataset_builder.build_dataset(model_config_file, load_full_dataset=True)
+    print('subject:', dataset.subject_name)
 
     model = model_builder.build_model(model_config_file, dataset, device)
     model.load_state_dict(model_state_path)
@@ -82,14 +83,14 @@ if __name__ == '__main__':
     start_index = 0 #3188 #cartwheel
 
     # num of frames:
-    step_default = 1000
+    step_default = 2000
 
     # num of clips
     num_trial_default = 6
 
     # path of your checkpoint directory
     # model_name = 'amdm_100style'
-    model_name = 'amdm_motionvivid'
+    model_name = 'amdm_motionvivid_test'
     par_path = 'output/base/'
     model_config_file = '{}/{}/config.yaml'.format(par_path, model_name)
    

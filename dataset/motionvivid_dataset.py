@@ -25,6 +25,7 @@ class MotionVivid(base_dataset.BaseMotionData):
         file_lst = glob.glob(path, recursive = True)
         if self.only_forward:
             file_lst = [f for f in file_lst if 'fr' in f or 'fw' in f.split('/')[-1]]
+        print('file_lst:', file_lst)
         return file_lst
     
     def process_data(self, fname):

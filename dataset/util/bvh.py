@@ -269,10 +269,7 @@ def output_as_bvh(file_path, root_xyz, joint_rot_eulers, joint_rot_order, joint_
     out_str = 'HIERARCHY\n'
     out_str+= 'ROOT {}\n'.format(joint_names[root_index])
     out_str+= '{\n'
-<<<<<<< HEAD
-=======
     # print(joint_offset.shape)
->>>>>>> cf1d2395b1f990a06a39d6a089ea2d1d13b7ad6b
     out_str+= ' OFFSET {:6f} {:6f} {:6f}\n'.format(joint_offset[root_index][0],joint_offset[root_index][2],joint_offset[root_index][1])
     out_str+= ' CHANNELS 6 Xposition Yposition Zposition {}rotation {}rotation {}rotation\n'.format(rot_order[root_index][0],rot_order[root_index][1],rot_order[root_index][2])
     

@@ -141,7 +141,8 @@ def run(rank, num_procs, args):
     create_output_dirs(out_model_file, int_output_dir)
     out_model_dir = os.path.dirname(out_model_file)
     
-    load_full_motion = mode == 'train' or test_motion_file == ""
+    # load_full_motion = mode == 'train' or test_motion_file == ""
+    load_full_motion = True
     dataset = build_dataset(model_config_file, load_full_motion)
     if test_motion_file != "":
         print('Loading test file:', test_motion_file)
@@ -163,14 +164,18 @@ def run(rank, num_procs, args):
             dataset.valid_idx = np.arange(0,dataset.motion_flattened.shape[0])
 
     if trained_model_path:
-        try:
-            print('Loading model param:{}\n model config:{}'.format(trained_model_path, model_config_file))
-            model = model_builder.build_model(model_config_file, dataset, device)
-            state_dict = torch.load(trained_model_path)
-            model.load_state_dict(state_dict)
-        except:
-            print('Loading model: {}'.format(trained_model_path))
-            model = torch.load(trained_model_path)
+        print('Loading model param:{}\n model config:{}'.format(trained_model_path, model_config_file))
+        model = model_builder.build_model(model_config_file, dataset, device)
+        state_dict = torch.load(trained_model_path)
+        model.load_state_dict(state_dict)
+        # try:
+        #     print('Loading model param:{}\n model config:{}'.format(trained_model_path, model_config_file))
+        #     model = model_builder.build_model(model_config_file, dataset, device)
+        #     state_dict = torch.load(trained_model_path)
+        #     model.load_state_dict(state_dict)
+        # except:
+        #     print('Loading model: {}'.format(trained_model_path))
+        #     model = torch.load(trained_model_path)
         
         model.to(device)
         model.eval()
@@ -182,13 +187,15 @@ def run(rank, num_procs, args):
         agent = build_agent(agent_config_file, model, env, device)
         if trained_controller_path:
             print("Loading controller:",trained_controller_path)
-            
-            try:
-                actor_critic = agent.actor_critic
-                state_dict = torch.load(trained_controller_path)
-                actor_critic.load_state_dict(state_dict)
-            except:
-                actor_critic = torch.load(trained_controller_path)
+            actor_critic = agent.actor_critic
+            state_dict = torch.load(trained_controller_path, map_location=device)
+            actor_critic.load_state_dict(state_dict)
+            # try:
+            #     actor_critic = agent.actor_critic
+            #     state_dict = torch.load(trained_controller_path, map_location=device)
+            #     actor_critic.load_state_dict(state_dict)
+            # except:
+            #     actor_critic = torch.load(trained_controller_path, map_location=device)
         
             actor_critic.to(device)
             actor_critic.eval()

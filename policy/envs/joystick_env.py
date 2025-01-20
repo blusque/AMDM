@@ -79,11 +79,7 @@ class JoystickEnv(target_env.TargetEnv):
             self.joystick_arr[:,self.timestep,0] = self.target_speed 
             self.joystick_arr[:,self.timestep,1] = self.target_direction 
 
-<<<<<<< HEAD
-            if self.timestep % 30 == 0:
-=======
             if self.timestep % 30 ==0:
->>>>>>> cf1d2395b1f990a06a39d6a089ea2d1d13b7ad6b
                 np.save(osp.join(self.int_output_dir,'joystick'), self.joystick_arr[:,:self.timestep])
 
             self.target[:, 0].add_(10 * np.cos(self.target_direction))

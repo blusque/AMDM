@@ -381,11 +381,7 @@ class PBLMocapViewer:
         RELEASED = self._p.KEY_WAS_RELEASED
 
         # keys is a dict, so need to check key exists
-<<<<<<< HEAD
-        if keys.get(ord("e")) == RELEASED:
-=======
         if keys.get(ord("d")) == RELEASED:
->>>>>>> cf1d2395b1f990a06a39d6a089ea2d1d13b7ad6b
             self.debug = not self.debug
         elif keys.get(ord("g")) == RELEASED:
             self.gui = not self.gui
@@ -405,11 +401,7 @@ class PBLMocapViewer:
         elif keys.get(ord("i")) == RELEASED:
             image = self.camera.dump_rgb_array()
             imwrite("image_c.png", image)
-<<<<<<< HEAD
-        elif keys.get(ord("o")) == RELEASED:
-=======
         elif keys.get(ord("a")) == RELEASED:
->>>>>>> cf1d2395b1f990a06a39d6a089ea2d1d13b7ad6b
             image = self.camera.dump_orthographic_rgb_array()
             imwrite("image_o.png", image)
         elif keys.get(ord("v")) == RELEASED:
@@ -426,17 +418,6 @@ class PBLMocapViewer:
                     break
                 elif keys.get(ord("a")) == RELEASED or keys.get(ord("i")) == RELEASED:
                     self._handle_key_press(keys)
-<<<<<<< HEAD
-        elif keys.get(ord("w")) == RELEASED:
-            self.duplicate_character()
-        elif keys.get(ord("s")) == RELEASED:
-            self.duplicate_character()
-        elif keys.get(ord("a")) == RELEASED:
-            self.duplicate_character()
-        elif keys.get(ord("d")) == RELEASED:
-            self.duplicate_character()
-=======
->>>>>>> cf1d2395b1f990a06a39d6a089ea2d1d13b7ad6b
 
 
 class MultiMocapCharacters:
