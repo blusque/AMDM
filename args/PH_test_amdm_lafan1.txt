@@ -5,7 +5,7 @@
 --int_output_dir output/path/amdm_lafan1/
 --env_config output/path/amdm_lafan1/path_amdm.yaml
 --agent_config output/path/amdm_lafan1/ppo.yaml
---controller_path output/path/amdm_lafan1/_ep2000.pth
+--controller_path output/path/amdm_lafan1/policy_model.pth
 --test_motion_file data/LAFAN1/dance1_subject1.bvh
 
 --device cuda:0

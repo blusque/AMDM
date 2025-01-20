@@ -19,6 +19,7 @@ import util.rand_util as rand_util
 import util.mp_util as mp_util
 
 import time
+import re
 
 def set_np_formatting():
     np.set_printoptions(edgeitems=30, infstr='inf',
@@ -55,8 +56,8 @@ def build_dataset(config, load_full_dataset):
     dataset = dataset_builder.build_dataset(config, load_full_dataset)
     return dataset
 
-def build_agent(config, model, env, device):
-    agent = agent_builder.build_agent(config, model, env, device)
+def build_agent(config, model, env, device, resume=0):
+    agent = agent_builder.build_agent(config, model, env, device, resume)
     return agent
 
 def build_env(config, int_output_dir, model, dataset, mode, device):
@@ -141,7 +142,8 @@ def run(rank, num_procs, args):
     create_output_dirs(out_model_file, int_output_dir)
     out_model_dir = os.path.dirname(out_model_file)
     
-    load_full_motion = mode == 'train' or test_motion_file == ""
+    # load_full_motion = mode == 'train' or test_motion_file == ""
+    load_full_motion = True
     dataset = build_dataset(model_config_file, load_full_motion)
     if test_motion_file != "":
         print('Loading test file:', test_motion_file)
@@ -163,14 +165,18 @@ def run(rank, num_procs, args):
             dataset.valid_idx = np.arange(0,dataset.motion_flattened.shape[0])
 
     if trained_model_path:
-        try:
-            print('Loading model param:{}\n model config:{}'.format(trained_model_path, model_config_file))
-            model = model_builder.build_model(model_config_file, dataset, device)
-            state_dict = torch.load(trained_model_path)
-            model.load_state_dict(state_dict)
-        except:
-            print('Loading model: {}'.format(trained_model_path))
-            model = torch.load(trained_model_path)
+        print('Loading model param:{}\n model config:{}'.format(trained_model_path, model_config_file))
+        model = model_builder.build_model(model_config_file, dataset, device)
+        state_dict = torch.load(trained_model_path)
+        model.load_state_dict(state_dict)
+        # try:
+        #     print('Loading model param:{}\n model config:{}'.format(trained_model_path, model_config_file))
+        #     model = model_builder.build_model(model_config_file, dataset, device)
+        #     state_dict = torch.load(trained_model_path)
+        #     model.load_state_dict(state_dict)
+        # except:
+        #     print('Loading model: {}'.format(trained_model_path))
+        #     model = torch.load(trained_model_path)
         
         model.to(device)
         model.eval()
@@ -179,16 +185,24 @@ def run(rank, num_procs, args):
 
     if agent_config_file:
         env = build_env(env_config_file, int_output_dir, model, dataset, mode, device)
-        agent = build_agent(agent_config_file, model, env, device)
+        if trained_controller_path:
+            controller_file = trained_controller_path.split('/')[-1]
+            result = re.search('[0-9]+', controller_file)
+            if result:
+                resume = int(result.group())
+            print("Resuming training from update:",resume)
+        agent = build_agent(agent_config_file, model, env, device, resume)
         if trained_controller_path:
             print("Loading controller:",trained_controller_path)
-            
-            try:
-                actor_critic = agent.actor_critic
-                state_dict = torch.load(trained_controller_path)
-                actor_critic.load_state_dict(state_dict)
-            except:
-                actor_critic = torch.load(trained_controller_path)
+            actor_critic = agent.actor_critic
+            state_dict = torch.load(trained_controller_path)
+            actor_critic.load_state_dict(state_dict)
+            # try:
+            #     actor_critic = agent.actor_critic
+            #     state_dict = torch.load(trained_controller_path)
+            #     actor_critic.load_state_dict(state_dict)
+            # except:
+            #     actor_critic = torch.load(trained_controller_path)
         
             actor_critic.to(device)
             actor_critic.eval()
