@@ -198,7 +198,7 @@ class TargetEnv(base_env.EnvBase):
         self.calc_potential()
         linear_progress = self.linear_potential - old_linear_potential
         angular_progress = self.angular_potential - old_angular_potential
-        progress = linear_progress
+        progress = linear_progress + 20 * angular_progress
         
         return progress
 

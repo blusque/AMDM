@@ -202,18 +202,18 @@ class BaseMotionData(data.Dataset):
                 #reorder and create joint index limits, for retrieval specific element in the feature in the future
                 self.motion_flattened, self.std, self.avg = self.transform_data_flattened(self.motion_flattened, self.std, self.avg)
 
-                # np.savez(osp.join(self.path,'data.npz'), 
-                #         motion_flattened = self.motion_flattened, file_lst= self.file_lst, valid_range = self.valid_range, labels = self.labels)
-                # np.savez(osp.join(self.path,'stats.npz'), 
-                #             std = self.std, avg = self.avg, frame_dim = self.frame_dim, 
-                #             joint_offset = self.joint_offset, joint_names= self.joint_names, links = self.links, 
-                #             data_root_dim = self.data_root_dim,
-                #             dxdydr_dim_lst = self.dxdydr_dim_lst,
-                #             joint_dim_lst = self.joint_dim_lst,  
-                #             vel_dim_lst = self.vel_dim_lst,
-                #             angle_dim_lst = self.angle_dim_lst,
-                #             offset_dim_lst = self.offset_dim_lst,
-                #             height_index = self.height_index)
+                np.savez(osp.join(self.path,'data.npz'), 
+                        motion_flattened = self.motion_flattened, file_lst= self.file_lst, valid_range = self.valid_range, labels = self.labels)
+                np.savez(osp.join(self.path,'stats.npz'), 
+                            std = self.std, avg = self.avg, frame_dim = self.frame_dim, 
+                            joint_offset = self.joint_offset, joint_names= self.joint_names, links = self.links, 
+                            data_root_dim = self.data_root_dim,
+                            dxdydr_dim_lst = self.dxdydr_dim_lst,
+                            joint_dim_lst = self.joint_dim_lst,  
+                            vel_dim_lst = self.vel_dim_lst,
+                            angle_dim_lst = self.angle_dim_lst,
+                            offset_dim_lst = self.offset_dim_lst,
+                            height_index = self.height_index)
             
     
             self.test_valid_idx_full = []

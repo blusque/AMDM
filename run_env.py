@@ -190,8 +190,10 @@ def run(rank, num_procs, args):
             result = re.search('[0-9]+', controller_file)
             if result:
                 resume = int(result.group())
-            print("Resuming training from update:",resume)
-        agent = build_agent(agent_config_file, model, env, device, resume)
+                print("Resuming training from update:",resume)
+                agent = build_agent(agent_config_file, model, env, device, resume)
+            else:
+                agent = build_agent(agent_config_file, model, env, device)
         if trained_controller_path:
             print("Loading controller:",trained_controller_path)
             actor_critic = agent.actor_critic
