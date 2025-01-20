@@ -19,6 +19,7 @@ import util.rand_util as rand_util
 import util.mp_util as mp_util
 
 import time
+import re
 
 def set_np_formatting():
     np.set_printoptions(edgeitems=30, infstr='inf',
@@ -55,8 +56,8 @@ def build_dataset(config, load_full_dataset):
     dataset = dataset_builder.build_dataset(config, load_full_dataset)
     return dataset
 
-def build_agent(config, model, env, device):
-    agent = agent_builder.build_agent(config, model, env, device)
+def build_agent(config, model, env, device, resume=0):
+    agent = agent_builder.build_agent(config, model, env, device, resume)
     return agent
 
 def build_env(config, int_output_dir, model, dataset, mode, device):
@@ -184,7 +185,13 @@ def run(rank, num_procs, args):
 
     if agent_config_file:
         env = build_env(env_config_file, int_output_dir, model, dataset, mode, device)
-        agent = build_agent(agent_config_file, model, env, device)
+        if trained_controller_path:
+            controller_file = trained_controller_path.split('/')[-1]
+            result = re.search('[0-9]+', controller_file)
+            if result:
+                resume = int(result.group())
+            print("Resuming training from update:",resume)
+        agent = build_agent(agent_config_file, model, env, device, resume)
         if trained_controller_path:
             print("Loading controller:",trained_controller_path)
             actor_critic = agent.actor_critic

@@ -3,7 +3,7 @@ import policy.learning.ppo_model as ppo_model
 import policy.learning.ppo_agent as ppo_agent
 
 
-def build_agent(agent_file, model,  env,  device):
+def build_agent(agent_file, model,  env,  device, resume=0):
     agent_config = load_agent_file(agent_file)    
     agent_name = agent_config["agent_name"]
 
@@ -15,7 +15,7 @@ def build_agent(agent_file, model,  env,  device):
 
     print("Building {} agent".format(agent_name))
     if (agent_name == ppo_agent.PPOAgent.NAME):
-        agent = ppo_agent.PPOAgent(config=agent_config, actor_critic=model, env=env, device=device)
+        agent = ppo_agent.PPOAgent(config=agent_config, actor_critic=model, env=env, resume=resume, device=device)
     else:
         assert(False), "Unsupported agent: {}".format(agent_name)
 

@@ -33,7 +33,7 @@ from policy.common.misc_utils import EpisodeRunner
 
 class PPOAgent(object):
     NAME = 'PPO'
-    def __init__(self, config, actor_critic, env, device):
+    def __init__(self, config, actor_critic, env, resume, device):
         self.mirror_function = None
         self.config = config
         self.device = device
@@ -46,6 +46,7 @@ class PPOAgent(object):
         num_frames = 10e9
         self.num_steps_per_rollout = self.env.max_timestep
         self.num_updates = int( num_frames / self.num_parallel / self.num_steps_per_rollout)
+        self.resume_update = resume
         self.num_mini_batch = int( self.num_parallel * self.num_steps_per_rollout / self.mini_batch_size)
         self.num_epoch = 0
         obs_shape = self.env.observation_space.shape
@@ -137,7 +138,7 @@ class PPOAgent(object):
         self.rollouts.observations[0].copy_(obs)
         self.rollouts.to(self.device)
         num_samples = 0
-        for update in range(self.num_updates):
+        for update in range(self.resume_update, self.num_updates):
 
             ep_info = {"reward": []}
             ep_reward = 0
