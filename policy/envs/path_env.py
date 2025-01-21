@@ -18,12 +18,6 @@ class PathEnv(target_env.TargetEnv):
         )
         self.timestep = 0
         self.substep = 0
-        if self.is_rendered:
-            self.path_offsets = torch.zeros(self.num_parallel, 1).long()
-        else:
-            self.path_offsets = torch.randint(
-                0, self.path.size(0), (self.num_parallel, 1)
-            ).long()
 
         # controller receives 4 upcoming targets
         self.lookahead = 4
@@ -43,6 +37,13 @@ class PathEnv(target_env.TargetEnv):
         self.change_path_rate = 0.3
         self.path = self.path[0]
         self.path_vel = self.path_vel[0]
+
+        if self.is_rendered:
+            self.path_offsets = torch.zeros(self.num_parallel, 1).long()
+        else:
+            self.path_offsets = torch.randint(
+                0, self.path.size(0), (self.num_parallel, 1)
+            ).long()
 
         self.facing_mode = self.sample_random_facing(1)[0]
         self.change_facing_gap = 12 * self.lookahead_gap
@@ -65,8 +66,6 @@ class PathEnv(target_env.TargetEnv):
         if len(pos.shape) == 1:
             pos = pos.unsqueeze(0)
             pos = pos.repeat(num_parallel,1)
-        print('vel: ', vel.shape)
-        print('pos: ', pos.shape)
         for i in range(self.max_timestep - self.timestep):
             acc = torch.normal(mean=torch.zeros(num_parallel,2), std=torch.ones(num_parallel,2)*std_acc)
             vel += acc
@@ -247,10 +246,10 @@ class PathEnv(target_env.TargetEnv):
         # Check if target is reached
         # Has to be done after new potentials are calculated
         target_dist = -self.linear_potential
-        print('target dist: ', target_dist.item())
         target_is_too_far = target_dist > self.big_err
-        dist_reward = target_is_too_far.float() * -2 * torch.exp(0.5 * target_dist) + \
-            2 * torch.exp(0.5 * self.linear_potential) + progress
+        # dist_reward = target_is_too_far.float() * -2 * torch.exp(0.5 * target_dist) + \
+        #     2 * torch.exp(0.5 * self.linear_potential) + progress
+        dist_reward = 2 * torch.exp(0.5 * self.linear_potential) + progress
 
         if is_external_step:
             self.reward.copy_(dist_reward)

@@ -194,6 +194,8 @@ def run(rank, num_procs, args):
                 agent = build_agent(agent_config_file, model, env, device, resume)
             else:
                 agent = build_agent(agent_config_file, model, env, device)
+        else:
+            agent = build_agent(agent_config_file, model, env, device)
         if trained_controller_path:
             print("Loading controller:",trained_controller_path)
             actor_critic = agent.actor_critic
