@@ -38,6 +38,7 @@ class ActionEmbedding(nn.Module):
                  force_mask=False):
         super().__init__()
         self.nclasses = num_actions
+        self.latent_dim = latent_dim
         self.guidance_scale = guidance_scale
         self.action_embedding = nn.Parameter(
             torch.randn(num_actions, latent_dim))

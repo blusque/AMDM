@@ -160,6 +160,7 @@ class BaseMotionData(data.Dataset):
                             self.joint_offset.append(offset)
 
                     length = len(motion)
+                    self.cur_length = length
 
                     if self.min_motion_len and length < self.min_motion_len:
                         continue
@@ -178,6 +179,7 @@ class BaseMotionData(data.Dataset):
 
                 # Num frames x Dim feature
                 self.motion_flattened = np.concatenate(self.motion_flattened,axis=0)
+                self.labels = np.array(self.labels, dtype=np.int64)
                 
                 # skeleton joint offset
                 self.joint_offset = np.array(self.joint_offset)

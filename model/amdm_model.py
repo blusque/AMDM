@@ -15,7 +15,6 @@ import model.modules.Activation as Activation
 
 import dataset.util.geo as geo_util
 
-
 class AMDM(model_base.BaseModel):
     NAME = 'AMDM'
     def __init__(self, config, dataset, device):
@@ -43,12 +42,15 @@ class AMDM(model_base.BaseModel):
             self.ema = EMA.EMA(self.ema_decay)
         return
 
-    def forward(self, input_lastx, input_noises, input_ts):
+    def forward(self, input_lastx, input_noises, input_ts, input_styles):
         x = input_noises[:, self.T]
+        style = self.diffusion.get_style_vec(input_styles, device=self.device)
         for t in range(self.T - 1, -1, -1):
             ts = input_ts[:, t]
             te = self.diffusion.time_mlp(ts)
-            pred = self.diffusion.model(input_lastx, x, te)
+            se = self.diffusion.style_emb.mask_cond(self.diffusion.style_emb(style))
+            latent = torch.cat([te, se], dim=-1)
+            pred = self.diffusion.model(input_lastx, x, latent)
             x = self.diffusion.remove_noise(x, pred, ts)
             if t > 0:
                 x = self.diffusion.add_noise_w(x, ts, input_noises[:,t])
@@ -59,7 +61,9 @@ class AMDM(model_base.BaseModel):
         self.diffusion.to(self.device)
         return
 
-    def eval_step(self, cur_x, extra_dict=None, align_rpr=False, record_process=False): 
+    def eval_step(self, cur_x, extra_dict=None, align_rpr=False, record_process=False):
+        if extra_dict is None:
+            extra_dict = {}
         diffusion = self.ema_diffusion if self.use_ema else self.diffusion  
         with torch.no_grad():
             if self.sample_mode == 'ddpm':
@@ -80,7 +84,6 @@ class AMDM(model_base.BaseModel):
 
     
     def eval_seq(self, start_x, extra_dict, num_steps, num_trials, align_rpr=False, record_process=False):
-
         if len(start_x.shape)<=1:
             start_x = start_x[None,:]
         
@@ -186,6 +189,7 @@ class GaussianDiffusion(nn.Module):
         self.time_emb_dim = config["model_hyperparam"]["time_emb_size"]
         self.hidden_dim = config["model_hyperparam"]["hidden_size"]
         self.layer_num = config["model_hyperparam"]["layer_num"]
+        self.num_styles = config['model_hyperparam']['num_styles']
         self.frame_dim = config['frame_dim']
 
         self.model = NoiseDecoder(self.frame_dim, self.hidden_dim, self.time_emb_dim, self.layer_num, self.norm_type, self.act_type)
@@ -195,6 +199,7 @@ class GaussianDiffusion(nn.Module):
             Activation.SiLU(),
             torch.nn.Linear(self.time_emb_dim, self.time_emb_dim),
         )
+        self.style_emb = Embedding.ActionEmbedding(self.num_styles, self.time_emb_dim)
         
         betas = self._generate_diffusion_schedule()
         alphas = 1. - betas
@@ -212,6 +217,21 @@ class GaussianDiffusion(nn.Module):
         self.register_buffer("reciprocal_sqrt_alphas_cumprod_m1", to_torch(np.sqrt(1. / alphas_cumprod -1)))
         self.register_buffer("remove_noise_coeff", to_torch(betas / np.sqrt(1. - alphas_cumprod)))
         self.register_buffer("sigma", to_torch(np.sqrt(betas)))
+
+    
+    def get_style_vec(self, styles, device):
+        if isinstance(styles, torch.Tensor):
+            bs = styles.shape[0]
+        else:
+            if isinstance(styles, np.ndarray):
+                styles = torch.from_numpy(styles).long().to(device)
+                bs = styles.shape[0]
+            else:
+                styles = torch.tensor(styles).to(device)
+                bs = 1
+        style = torch.zeros((bs, self.num_styles), dtype=torch.float32, device=device)
+        style[torch.arange(0, bs, 1, device=device), styles] = 1.
+        return style
 
 
     def _generate_diffusion_schedule(self, s=0.008):
@@ -300,8 +320,10 @@ class GaussianDiffusion(nn.Module):
 
 
     @torch.no_grad()
-    def sample_ddpm(self, last_x, extra_info, record_process=False):
-        
+    def sample_ddpm(self, last_x, extra_info: dict, record_process=False):
+        style = extra_info.get('style', 0)
+        style = torch.tensor([style], device=last_x.device).repeat(last_x.shape[0])
+        style_vec = self.get_style_vec(style, last_x.device)
         x = torch.randn(last_x.shape[0], last_x.shape[-1]).to(last_x.device)
         #ce = None if self.use_cond else self.cond_mlp(extra_info['cond'])
         if record_process:
@@ -311,7 +333,16 @@ class GaussianDiffusion(nn.Module):
             ts = torch.tensor([t], device = last_x.device).repeat(last_x.shape[0])
             te = self.time_mlp(ts)
 
-            pred = self.model(last_x, x, te).detach()
+            se = self.style_emb(style_vec)
+            se_non = self.style_emb.mask_cond(self.style_emb(style_vec), force=True)
+
+            latent = torch.cat([te, se], dim=-1)
+            latent_no_style = torch.cat([te, se_non], dim=-1)
+
+            pred_style = self.model(last_x, x, latent).detach()
+            pred_no_style = self.model(last_x, x, latent_no_style).detach()
+
+            pred = pred_no_style + self.style_emb.guidance_scale * (pred_style - pred_no_style)
             
             if self.estimate_mode == 'epsilon':
                 x = self.remove_noise(x, pred, ts)
@@ -451,15 +482,21 @@ class GaussianDiffusion(nn.Module):
     def forward(self, cur_x, next_x, ts, extra_info):
         bs = cur_x.shape[0]
         device = cur_x.device
+        style_idx = extra_info.get("style", None)
         if ts is None:
             ts = torch.randint(0, self.T, (bs,), device=device)
+        if style_idx is None:
+            style = torch.zeros((bs, self.style_emb.latent_dim), dtype=torch.float32, device=device)
+        else:
+            style = self.get_style_vec(style_idx, device)
         
-        time_emb = self.time_mlp(ts) 
+        time_emb = self.time_mlp(ts)
+        style_emb = self.style_emb.mask_cond(self.style_emb(style)) 
 
         noise = torch.randn_like(next_x)
         perturbed_x = self.perturb_x(next_x, ts.clone(), noise)
         
-        latent = time_emb
+        latent = torch.cat([time_emb, style_emb], dim=-1)
         estimated = self.model(cur_x, perturbed_x, latent)
         return estimated, noise, perturbed_x, ts
 
@@ -477,13 +514,14 @@ class NoiseDecoder(nn.Module):
         super().__init__()
 
         self.input_size = frame_size
+        latent_dim = time_emb_size * 2
         layers = []
         for _ in range(layer_num): 
             if act_type == 'ReLU':
                 non_linear = torch.nn.ReLU() ### v12 is ReLU
             elif act_type == 'SiLU':
                 non_linear = Activation.SiLU() 
-            linear = nn.Linear(hidden_size + frame_size * 2 + time_emb_size, hidden_size)
+            linear = nn.Linear(hidden_size + frame_size * 2 + latent_dim, hidden_size)
             if norm_type == 'layer_norm':
                 norm_layer = nn.LayerNorm(hidden_size)
             elif norm_type == 'group_norm':
@@ -493,8 +531,8 @@ class NoiseDecoder(nn.Module):
             layers.extend([non_linear, linear])
             
         self.net = nn.ModuleList(layers)
-        self.fin = nn.Linear(frame_size * 2 + time_emb_size, hidden_size)
-        self.fco = nn.Linear(hidden_size + frame_size * 2  + time_emb_size, frame_size)
+        self.fin = nn.Linear(frame_size * 2 + latent_dim, hidden_size)
+        self.fco = nn.Linear(hidden_size + frame_size * 2  + latent_dim, frame_size)
         self.act = Activation.SiLU()
   
     def forward(self, xcur, xnext, latent):

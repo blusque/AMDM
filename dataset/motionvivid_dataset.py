@@ -12,13 +12,23 @@ import os.path as osp
 
 class MotionVivid(base_dataset.BaseMotionData):
     NAME = 'MOTIONVIVID'
+    STYLE_MAP = {
+        'neutral': 0,
+        'angry': 1,
+        'drunk': 2,
+        'happy': 3,
+        'fear': 4,
+        'swimming': 5,
+        'twofootjump': 6,
+        'depressed': 7,
+        'bigstep': 8
+    }
     def __init__(self, config):
         self.only_forward = False
         if 'subject_name' in config['data']:
             self.subject_name = config['data']['subject_name']
             self.only_forward = config['data'].get('only_forward', False)
         super().__init__(config)
-        self.use_cond = False
         
     def get_motion_fpaths(self):
         path =  osp.join(self.path,'{}_*.{}'.format(self.subject_name, 'bvh'))
@@ -34,6 +44,14 @@ class MotionVivid(base_dataset.BaseMotionData):
         if self.data_trim_end:
             final_x = final_x[:self.data_trim_end]
         return final_x, motion_struct
+    
+    def process_label(self, fname):
+        style = fname.split('_')[1]
+        style_idx = self.STYLE_MAP[style]
+        style_list = []
+        for i in range(self.cur_length):
+            style_list.append(style_idx)
+        return style_list
 
     def load_new_data(self, path):
         x = self.process_data(path)
@@ -46,3 +64,11 @@ class MotionVivid(base_dataset.BaseMotionData):
     
     def plot_traj(self, x, path=None):
         return plot_util.plot_traj_lafan1(x, path)
+    
+    def __getitem__(self, idx):
+        idx_ = self.valid_idx[idx]
+        motion = self.motion_flattened[idx_:idx_ + self.rollout]
+        style = self.labels[idx_]
+        return motion, style
+
+
