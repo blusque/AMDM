@@ -106,6 +106,7 @@ class BaseTrainer():
             print('Eval Index:',st_idx)
             test_out_lst = []
             test_local_out_lst = []
+            extra_dict = {'style': self.dataset.labels[st_idx]}
 
             start_x = torch.from_numpy(ref_clip[0]).float().to(self.device)
             
@@ -125,8 +126,8 @@ class BaseTrainer():
             ref_local_clip = ref_clip - ref_clip[:,:,[0],:]
 
             test_out_lst.append(ref_clip.squeeze())
-            test_data = model.eval_seq(start_x, None, self.test_num_steps, self.test_num_trials)
-            test_data_long = model.eval_seq(start_x, None, 1000, 3)
+            test_data = model.eval_seq(start_x, extra_dict, self.test_num_steps, self.test_num_trials)
+            test_data_long = model.eval_seq(start_x, extra_dict, 1000, 3)
 
             num_all = torch.numel(test_data)
             num_nans = torch.sum(torch.isnan(test_data))

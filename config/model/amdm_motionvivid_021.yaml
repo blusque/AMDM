@@ -10,11 +10,12 @@ diffusion:
 
 model_hyperparam:
     layer_num: 15
+    num_styles: 9
     #cond_mask_prob: 0
     #cond_emb_size: 256 #condition frame for [class, text, etc]
     time_emb_size: 128 #time embediing
     hidden_size: 1024
-    use_cond: False
+    use_cond: True
     cond_num_cls: 0
     norm_type: "group_norm"
     act_type: "SiLU"
@@ -45,7 +46,7 @@ data:
     dataset_name: "MOTIONVIVID"
     path: "./data/MotionVivid/"
     dataset_class_name: "MOTIONVIVID"
-    subject_name: 's004'
+    subject_name: 's021'
     data_fps: 30
     root_rot_offset: 180
     min_motion_len: 0

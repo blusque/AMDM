@@ -170,6 +170,14 @@ class PathEnv(target_env.TargetEnv):
                 "data": torch.cat((self.root_xz, self.root_facing), dim=-1)[0],
             },
         }
+    
+    def get_target_delta_and_angle(self):
+        target_delta = self.target - self.root_xz
+        target_angle = (
+            torch.atan2(target_delta[:, 1], target_delta[:, 0]).unsqueeze(1)
+            + self.root_facing
+        )
+        return target_delta, target_angle
 
     def calc_env_state(self, next_frame):
         self.next_frame = next_frame
@@ -187,6 +195,9 @@ class PathEnv(target_env.TargetEnv):
         # Check if target is reached
         # Has to be done after new potentials are calculated
         target_dist = -self.linear_potential
+        target_is_too_far = target_dist > self.big_err
+        # dist_reward = target_is_too_far.float() * -2 * torch.exp(0.5 * target_dist) + \
+        #     2 * torch.exp(0.5 * self.linear_potential) + progress
         dist_reward = 2 * torch.exp(0.5 * self.linear_potential)
 
         if is_external_step:
@@ -194,11 +205,11 @@ class PathEnv(target_env.TargetEnv):
         else:
             self.reward.add_(dist_reward)
 
-        #target_is_close = target_dist < 0.2
-        #self.reward.add_(target_is_close.float() * target_dist)
+        # target_is_close = target_dist < 0.2
+        # self.reward.add_(target_is_close.float() * target_dist)
 
-        #target_is_super_close = target_dist < 0.1
-        #self.reward.add_(target_is_super_close.float() * 20.0)
+        # target_is_super_close = target_dist < 0.1
+        # self.reward.add_(target_is_super_close.float() * 20.0)
 
 
         # Need to reset target to next point in path

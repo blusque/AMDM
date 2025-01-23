@@ -129,8 +129,8 @@ class AMDMTrainer(trainer_base.BaseTrainer):
         pbar = tqdm(self.train_dataloader, colour='green')
         cur_samples = 1
         for frames in pbar:
-            extra_info = None
-            frames = frames.to(self.device).float()
+            extra_info = {'style': frames[1]}
+            frames = frames[0].to(self.device).float()
             
             self.optimizer.zero_grad()
 
