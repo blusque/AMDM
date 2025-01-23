@@ -143,6 +143,10 @@ class PBLMocapViewer:
             for index in range(self.num_characters):
                 self.targets.set_position(target_xyzs[index], index)
                 #height = target_xyzs[:,1]
+    
+    def add_force(self, force):
+        if self.env.NAME == "PATH":
+            self.env.add_force(force)
 
 
     def duplicate_character(self):
@@ -379,9 +383,13 @@ class PBLMocapViewer:
         if keys is None:
             keys = self._p.getKeyboardEvents()
         RELEASED = self._p.KEY_WAS_RELEASED
+        DOWN = self._p.KEY_IS_DOWN
+
+        force_x = 0.
+        force_y = 0.
 
         # keys is a dict, so need to check key exists
-        if keys.get(ord("d")) == RELEASED:
+        if keys.get(ord("b")) == RELEASED:
             self.debug = not self.debug
         elif keys.get(ord("g")) == RELEASED:
             self.gui = not self.gui
@@ -401,7 +409,7 @@ class PBLMocapViewer:
         elif keys.get(ord("i")) == RELEASED:
             image = self.camera.dump_rgb_array()
             imwrite("image_c.png", image)
-        elif keys.get(ord("a")) == RELEASED:
+        elif keys.get(ord("y")) == RELEASED:
             image = self.camera.dump_orthographic_rgb_array()
             imwrite("image_o.png", image)
         elif keys.get(ord("v")) == RELEASED:
@@ -418,6 +426,17 @@ class PBLMocapViewer:
                     break
                 elif keys.get(ord("a")) == RELEASED or keys.get(ord("i")) == RELEASED:
                     self._handle_key_press(keys)
+        if keys.get(ord("w")) == DOWN:
+            force_x -= 0.001
+        elif keys.get(ord("s")) == DOWN:
+            force_x += 0.001
+        if keys.get(ord("a")) == DOWN:
+            force_y -= 0.001
+        elif keys.get(ord("d")) == DOWN:
+            force_y += 0.001
+
+        force = np.array([force_x, force_y])
+        self.add_force(force)
 
 
 class MultiMocapCharacters:
