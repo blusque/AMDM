@@ -27,11 +27,13 @@ def gen_bvh(model_config_file, model_state_path, out_path, data_file_name, start
     unit_scale_inv = 1.0 / unit_util.unit_conver_scale(dataset.unit)
     offset = dataset.joint_offset * unit_scale_inv
 
-    normed_data = dataset.load_new_data(data_file_name)
+    normed_data, styles = dataset.load_new_data(data_file_name)
+    style = styles[0]
     
     start_x = torch.tensor(normed_data[start_frame_index]).to(device).float()
     start = time.time()
-    gen_seq = model.eval_seq(start_x, None, step_default, num_trial_default)
+    extra_info = {'style': style}
+    gen_seq = model.eval_seq(start_x, extra_info, step_default, num_trial_default)
     end = time.time()
     print(end - start)
 
@@ -78,7 +80,7 @@ if __name__ == '__main__':
     
     # file name:
     # data_file_name = './data/100STYLE/BeatChest/BeatChest_FR.bvh'
-    data_file_name = './data/MotionVivid/s001_angry_fw.bvh'
+    data_file_name = './data/MotionVivid/s004_angry_fw.bvh'
     # starting index:
     start_index = 0 #3188 #cartwheel
 
@@ -90,7 +92,7 @@ if __name__ == '__main__':
 
     # path of your checkpoint directory
     # model_name = 'amdm_100style'
-    model_name = 'amdm_motionvivid_test'
+    model_name = 'amdm_motionvivid_004'
     par_path = 'output/base/'
     model_config_file = '{}/{}/config.yaml'.format(par_path, model_name)
    

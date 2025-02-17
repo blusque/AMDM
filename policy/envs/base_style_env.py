@@ -17,7 +17,7 @@ class EnvBase(gym.Env):
         self.num_parallel_test = config.get('num_parallel_test',1)
 
         self.frame_skip = config.get('frame_skip',1)
-        self.max_timestep = config.get('max_timestep_test',2000) if self.is_rendered else config.get('max_timestep',1000//self.frame_skip)
+        self.max_timestep = config.get('max_timestep_test', 2000) if self.is_rendered else config.get('max_timestep', 1000//self.frame_skip)
         self.camera_tracking = config.get('camera_tracking',True)
         
         self.int_output_dir = config['int_output_dir']
@@ -37,12 +37,14 @@ class EnvBase(gym.Env):
 
         self.root_idx = dataset.root_idx
         self.foot_idx = dataset.foot_idx
+        self.styles = dataset.labels
                 
         self.action_scale = config.get('action_scale',1.0)
         self.test_action_scale = config.get('test_action_scale',self.action_scale)
 
         self.model_type = config['model_type']
         print('model type:', self.model_type)
+        print('style:', self.styles[0])
         if config['model_type'] == 'amdm':
             
             self.action_step = config['action_step']
@@ -72,7 +74,9 @@ class EnvBase(gym.Env):
                                'test_action_scale': self.test_action_scale,
                                'rand_scale':self.random_scale, 
                                'test_rand_scale':self.test_random_scale,
-                               'clip_scale':self.clip_scale}
+                               'clip_scale':self.clip_scale,
+                               'style':self.styles[0].repeat(self.num_parallel_test)}
+            print('style:', self.styles[0])
             
 
 
@@ -86,7 +90,7 @@ class EnvBase(gym.Env):
 
         else:
             self.action_dim = dataset.frame_dim
-            self.extra_info = {}
+            self.extra_info = {'style': self.styles[0].repeat(self.num_parallel_test)}
 
         if self.is_rendered:
             self.record_num_frames = np.zeros((self.num_parallel_test,))

@@ -39,7 +39,7 @@ def load_args(argv):
     rand_seed_key = "rand_seed"
     if (args.has_key(rand_seed_key)):
         rand_seed = args.parse_int(rand_seed_key)
-        #rand_seed = mp_util.get_proc_rank()
+        # rand_seed = mp_util.get_proc_rank()
         rand_util.set_rand_seed(rand_seed)
     return args
 
@@ -126,6 +126,7 @@ def run(rank, num_procs, args):
     
     test_motion_file = args.parse_string("test_motion_file", "")
     test_motion_frame = args.parse_string("test_motion_frame", "")
+    use_style = args.parse_bool("use_style", False)
 
     out_model_file = args.parse_string("out_model_file", "")
     trained_model_path = args.parse_string("model_path", "")
@@ -148,11 +149,10 @@ def run(rank, num_procs, args):
     if test_motion_file != "":
         print('Loading test file:', test_motion_file)
         normed_motion = dataset.load_new_data(test_motion_file)
-        
+
         if test_motion_frame != "":
             test_motion_frame = int(test_motion_frame)
             normed_motion = normed_motion[test_motion_frame,:].reshape(-1, normed_motion.shape[-1])
-            
         dataset.motion_flattened = normed_motion
         dataset.valid_range = [0,dataset.motion_flattened.shape[0]]
         dataset.valid_idx = np.arange(0,dataset.motion_flattened.shape[0])

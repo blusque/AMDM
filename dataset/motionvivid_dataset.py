@@ -28,6 +28,7 @@ class MotionVivid(base_dataset.BaseMotionData):
         if 'subject_name' in config['data']:
             self.subject_name = config['data']['subject_name']
             self.only_forward = config['data'].get('only_forward', False)
+        self.cond_embedding_dim = config['model_hyperparam']['time_emb_size']
         super().__init__(config)
         
     def get_motion_fpaths(self):
@@ -58,6 +59,10 @@ class MotionVivid(base_dataset.BaseMotionData):
         x_normed = self.norm_data(x[0])
         #x_normed = self.transform_new_data(x_normed)
         return x_normed
+    
+    def load_data_labels(self, path):
+        labels = np.array(self.process_label(path), dtype=np.int64)
+        return labels
     
     def plot_jnts(self, x, path=None):
         return plot_util.plot_multiple(x, self.links, plot_util.plot_lafan1, self.fps, path)

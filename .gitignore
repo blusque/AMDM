@@ -173,4 +173,5 @@ cython_debug/
 *.0
 *.zip
 
-*.zip
+*.mp4
+*.onnx

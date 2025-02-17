@@ -2,7 +2,7 @@ env_module: "policy.envs.randomplay_env:RandomPlayEnv"
 env_name: "RandomPlayEnv"
 num_parallel_test: 1
 
-max_timestep: 5000
+max_timestep: 500
 frame_skip: 1
 
 #text: ['sidestep', 'forward', 'backward', 'stand still',',']
