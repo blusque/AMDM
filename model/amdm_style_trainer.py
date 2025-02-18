@@ -1,11 +1,12 @@
 import numpy as np
+import copy
 
 import torch
 from tqdm import tqdm
 import model.trainer_base as trainer_base
 
 class AMDMTrainer(trainer_base.BaseTrainer):
-    NAME = 'AMDM'
+    NAME = 'AMDM_STYLE'
     def __init__(self, config, dataset, device):
         super(AMDMTrainer, self).__init__(config, dataset, device)
         optimizer_config = config['optimizer']
@@ -129,8 +130,8 @@ class AMDMTrainer(trainer_base.BaseTrainer):
         pbar = tqdm(self.train_dataloader, colour='green')
         cur_samples = 1
         for frames in pbar:
-            extra_info = {}
-            frames = frames.to(self.device).float()
+            extra_info = {'style': frames[1]}
+            frames = frames[0].to(self.device).float()
             
             self.optimizer.zero_grad()
 
@@ -164,3 +165,93 @@ class AMDMTrainer(trainer_base.BaseTrainer):
                 }
         
         return train_info
+    
+    def evaluate(self, ep, model, result_ouput_dir):
+        model.eval()
+        NaN_clip_num = 0
+
+        for idx, (st_idx, ref_clip) in enumerate(zip(self.dataset.test_valid_idx, self.dataset.test_ref_clips)):
+            print('Eval Index:',st_idx)
+            test_out_lst = []
+            test_local_out_lst = []
+            extra_dict = {'style': self.dataset.labels[st_idx]}
+
+            start_x = torch.from_numpy(ref_clip[0]).float().to(self.device)
+            
+            if ep == 0:
+                model_lst = self.dataset.data_component           
+                cur_jnts = []
+                for mode in model_lst:
+                    jnts_mode = self.dataset.x_to_jnts(self.dataset.denorm_data(ref_clip), mode=mode)
+                    cur_jnts.append(jnts_mode)
+                cur_jnts = np.array(cur_jnts)
+
+                self.plot_jnts_fn(cur_jnts.squeeze(), result_ouput_dir+'/gt_{}'.format(st_idx))
+                ref_clip = cur_jnts[[0],...]
+            else:
+                ref_clip = self.dataset.x_to_jnts(self.dataset.denorm_data(ref_clip), mode=self.dataset.data_component[0])[None,...]
+            
+            ref_local_clip = ref_clip - ref_clip[:,:,[0],:]
+
+            test_out_lst.append(ref_clip.squeeze())
+            test_data = model.eval_seq(start_x, extra_dict, self.test_num_steps, self.test_num_trials)
+            test_data_long = model.eval_seq(start_x, extra_dict, 1000, 3)
+
+            num_all = torch.numel(test_data)
+            num_nans = torch.sum(torch.isnan(test_data))
+
+            num_all_long = torch.numel(test_data_long)
+            num_nans_long = torch.sum(torch.isnan(test_data_long))
+        
+            print('percent of nan frames : {}'.format(num_nans*1.0/num_all))
+            print('percent of nan frames for long horizon gen : {}'.format(num_nans_long*1.0/num_all_long))
+            should_plot = True
+            if num_nans > 0:
+                NaN_clip_num += 1
+                should_plot = False
+                #print('skip calc stats {} to save time'.format(st_idx))
+                #if False:#NaN_clip_num >= len(self.dataset.test_valid_idx)-1:
+                #continue # skip calc stats to save time
+                        
+            test_data = test_data.detach().cpu().numpy()
+
+            for i in range(test_data.shape[0]):
+                cur_denormed_test_data = self.dataset.denorm_data(copy.deepcopy(test_data[i]))
+                cur_jnts = []
+               
+                for mode in self.dataset.data_component:
+                    jnts_mode = self.dataset.x_to_jnts(cur_denormed_test_data, mode = mode)
+                    cur_jnts.append(jnts_mode)
+
+                    if mode == self.dataset.data_component[0]:
+                        test_out_lst.append(jnts_mode)
+                        jnts_mode_local = jnts_mode - jnts_mode[:,[0],:]  
+                        test_local_out_lst.append(jnts_mode_local)
+                cur_jnts = np.array(cur_jnts)
+                if should_plot:
+                    self.plot_jnts_fn(cur_jnts.squeeze(), result_ouput_dir+'/{}_{}'.format(st_idx,i))
+            test_out_lst = np.array(test_out_lst)
+            self.plot_traj_fn(test_out_lst, result_ouput_dir+'/{}'.format(st_idx))
+            
+            test_data_long = test_data_long.detach().cpu().numpy()
+            test_out_long_lst = []
+            for i in range(test_data_long.shape[0]):
+                cur_denormed_test_data = self.dataset.denorm_data(copy.deepcopy(test_data_long[i]))
+                cur_jnts = []
+               
+                for mode in self.dataset.data_component:
+                    jnts_mode = self.dataset.x_to_jnts(cur_denormed_test_data, mode = mode)
+                    cur_jnts.append(jnts_mode)
+
+                    if mode == self.dataset.data_component[0]:
+                        test_out_long_lst.append(jnts_mode)
+                        jnts_mode_local = jnts_mode - jnts_mode[:,[0],:]  
+                cur_jnts = np.array(cur_jnts)
+              
+            test_out_long_lst = np.array(test_out_long_lst)
+            self.plot_traj_fn(test_out_long_lst, result_ouput_dir+'/{}_long'.format(st_idx))
+            
+
+
+
+        return NaN_clip_num

@@ -190,6 +190,7 @@ class BaseMotionData(data.Dataset):
                 # skeleton joint names
                 self.joint_names = [x._name for x in self.motion_struct._skeleton._joint_lst] if self.joint_names is None else self.joint_names
                 self.num_jnt = len(self.joint_names)
+                print('joint num:', self.num_jnt)
 
                 # boundry of mocap clips
                 self.valid_range = np.array(self.valid_range)
@@ -200,6 +201,7 @@ class BaseMotionData(data.Dataset):
                 self.avg = self.normalization['avg']
                 
                 self.frame_dim = self.motion_flattened.shape[-1]
+                print('frame dim: ', self.frame_dim)
 
                 #reorder and create joint index limits, for retrieval specific element in the feature in the future
                 self.motion_flattened, self.std, self.avg = self.transform_data_flattened(self.motion_flattened, self.std, self.avg)
@@ -322,7 +324,8 @@ class BaseMotionData(data.Dataset):
             if comp == 'angle':
                 data_denormed = self.denorm_data(data)
                 cur_data = data_denormed[...,idx:idx+self.num_jnt*6]
-                cur_data = cur_data.reshape((num_frame, self.num_jnt, -1)).reshape(num_frame * self.num_jnt, -1) 
+                print(data_denormed.shape)
+                cur_data = cur_data.reshape(num_frame, self.num_jnt, -1).reshape(num_frame * self.num_jnt, -1) 
                 cur_data = torch.tensor(cur_data)
 
                 cur_data = self.from_6d_to_rpr(cur_data).numpy().reshape(num_frame, self.num_jnt,-1).reshape(num_frame, -1)

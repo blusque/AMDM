@@ -6,6 +6,7 @@ import dataset.lafan1_dataset as lafan1_dataset
 import dataset.lafan1_hetero_dataset as lafan1_hetero_dataset
 import dataset.style100_dataset as style100_dataset
 import dataset.motionvivid_dataset as motionvivid_dataset
+import dataset.basketball_dataset as basketball_dataset
 import yaml
 
 def build_dataset(config_file, load_full_dataset):
@@ -37,6 +38,8 @@ def build_dataset(config_file, load_full_dataset):
         dataset = style100_dataset.STYLE100(config)
     elif (dataset_class_name == motionvivid_dataset.MotionVivid.NAME):
         dataset = motionvivid_dataset.MotionVivid(config)
+    elif (dataset_class_name == basketball_dataset.Basketball.NAME):
+        dataset = basketball_dataset.Basketball(config)
     else:
         assert(False), "Unsupported dataset class: {}".format(dataset_class_name)
     return dataset

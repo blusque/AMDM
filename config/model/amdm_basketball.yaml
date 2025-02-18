@@ -5,8 +5,8 @@ diffusion:
     estimate_mode: "epsilon"
     loss_type: "l1"
     noise_schedule_mode: "cosine"
-    T: 15 #40 #25
-    eval_T: 15 #40 #25
+    T: 25 #40 #25
+    eval_T: 25 #40 #25
     #denoiser: 
 
 model_hyperparam:
@@ -41,10 +41,9 @@ optimizer:
         ema_update_rate: 1
 
 data:   
-    dataset_name: "LAFAN1"
-    path: "./data/LAFAN1"
-    
-    root_rot_offset: -90 #degree
+    dataset_name: "BASKETBALL"
+    path: "./data/Basketball"
+    root_rot_offset: -90 #degree to x forward, z right, y up
     data_fps: 30
     data_trim_begin: 0
     data_trim_end: -1
@@ -54,7 +53,7 @@ data:
     data_component: [ position, velocity, angle ]
 
 test:
-    test_interval: 20
+    test_interval: 100
     test_num_steps: 60
-    test_num_trials: 1
-    test_num_init_frame: 2
+    test_num_trials: 3
+    test_num_init_frame: 1

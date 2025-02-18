@@ -106,7 +106,7 @@ class BaseTrainer():
             print('Eval Index:',st_idx)
             test_out_lst = []
             test_local_out_lst = []
-            extra_dict = {'style': self.dataset.labels[st_idx]}
+            extra_dict = {}
 
             start_x = torch.from_numpy(ref_clip[0]).float().to(self.device)
             
