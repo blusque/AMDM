@@ -34,7 +34,7 @@ class ActionEmbedding(nn.Module):
                  num_actions,
                  latent_dim,
                  guidance_scale=7.5,
-                 guidance_uncodp=0.1,
+                 guidance_uncodp=0.3,
                  force_mask=False):
         super().__init__()
         self.nclasses = num_actions
