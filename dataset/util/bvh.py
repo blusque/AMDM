@@ -317,6 +317,22 @@ def output_as_bvh(file_path, root_xyz, joint_rot_eulers, joint_rot_order, joint_
         out_file.write(out_str)
     out_file.close()
 
+def trajector_to_local_trajectory(trajectory, sample_step=3):
+    nfrm = trajectory.shape[0]
+    local_trajectory = np.zeros((nfrm, 6, 3))
+    global_heading_rot = np.array([geo_util.rot_yaw(x) for x in trajectory[:, 2]])
+    sample_lst = [-3, -2, -1, 1, 2, 3]
+    for idx, i in enumerate(sample_lst):
+        sample_idx = i * sample_step
+        start_idx = max(0, -sample_idx)
+        end_idx = min(nfrm, nfrm - sample_idx)
+        local_trajectory[start_idx:end_idx, idx, 2] = trajectory[start_idx+sample_idx:end_idx+sample_idx, 2] - trajectory[start_idx:end_idx, 2]
+        local_trajectory[start_idx:end_idx, idx, :2] = trajectory[start_idx+sample_idx:end_idx+sample_idx, :2] - trajectory[start_idx:end_idx, :2]
+        local_trajectory_pos = np.zeros((end_idx - start_idx, 3))
+        local_trajectory_pos[:, [0, 2]] = local_trajectory[start_idx:end_idx, idx, :2]
+        local_trajectory_pos = np.matmul(global_heading_rot[start_idx:end_idx], local_trajectory_pos[..., None])
+        local_trajectory[start_idx:end_idx, idx, :2] = local_trajectory_pos[:, [0, 2]].squeeze(axis=-1)
+    local_trajectory = local_trajectory.reshape((nfrm, -1))
 
 
 def read_bvh_loco(path, unit, target_fps, root_rot_offset=0, frame_start=None, frame_end=None):

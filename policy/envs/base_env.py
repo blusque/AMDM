@@ -239,7 +239,8 @@ class EnvBase(gym.Env):
     def reset_initial_frames(self, index=None):
         # Make sure condition_range doesn't blow up
         num_init = self.num_parallel if index is None else len(index)
-        start_index = torch.randint(0, len(self.dataset.valid_idx), (num_init,1)) 
+        # start_index = torch.randint(0, len(self.dataset.valid_idx), (num_init,1)) 
+        start_index = 0
         start_index = self.dataset.valid_idx[start_index]
         data = torch.tensor(self.dataset.motion_flattened[start_index], device = self.device, dtype=torch.float32).clone()
     

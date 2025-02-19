@@ -12,7 +12,7 @@ import model.model_builder as model_builder
 def gen_bvh(model_config_file, model_state_path, out_path, data_file_name, start_frame_index, num_trial_default, step_default, device = 'cuda'):
 
     os.makedirs(out_path, exist_ok=True)
-    data_mode = 'angle' #position,velocity
+    data_mode = 'position' #position,velocity
     root_offset = np.array([0,0,0]) #1200
 
     dataset = dataset_builder.build_dataset(model_config_file, load_full_dataset=True)
@@ -81,12 +81,12 @@ if __name__ == '__main__':
     # file name:
     # data_file_name = './data/100STYLE/BeatChest/BeatChest_FR.bvh'
     # data_file_name = './data/MotionVivid/s004_angry_fw.bvh'
-    data_file_name = './data/Basketball/LH_R90.bvh'
+    data_file_name = './data/Basketball/LH_L0.bvh'
     # starting index:
-    start_index = 0 #3188 #cartwheel
+    start_index = 70 #3188 #cartwheel
 
     # num of frames:
-    step_default = 2000
+    step_default = 1000
 
     # num of clips
     num_trial_default = 6
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     par_path = 'output/base/'
     model_config_file = '{}/{}/config.yaml'.format(par_path, model_name)
    
-    state_dict = torch.load('{}/{}/model_param.pth'.format(par_path,model_name))
+    state_dict = torch.load('{}/{}/_ep55500.pth'.format(par_path,model_name))
     
     # save bvhs under your 
     out_path = '{}/{}/{}_{}step_intro'.format(par_path, model_name, start_index, step_default)  

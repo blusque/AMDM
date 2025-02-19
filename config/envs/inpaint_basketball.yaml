@@ -2,8 +2,8 @@ env_module: "policy.envs.inpaint_env:InpaintEnv"
 env_name: "InpaintEnv"
 num_parallel: 1
 num_parallel_test: 1
-max_timestep: 130
-max_timestep_test: 130
+max_timestep: 300
+max_timestep_test: 300
 frame_skip: 1
 
 model_type: 'inpaint'
@@ -33,10 +33,10 @@ edit:
   
   full_trajectory:
     start_frame: 0 #210 #300
-    end_frame: 130 #510 #600
+    end_frame: 150 #510 #600
     val: 'data/Basketball/LH_L0.bvh'
     data_start_frame: 0 #241 #301
-    data_end_frame: 130 #741 #601
+    data_end_frame: 150 #741 #601
 
   #full_rotation:  #deep fk
   #  start_frame: 100 #210 #300
