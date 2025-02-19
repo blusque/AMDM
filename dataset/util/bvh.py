@@ -365,7 +365,7 @@ def read_bvh_loco(path, unit, target_fps, root_rot_offset=0, frame_start=None, f
 
     size_frame = 3+njoint*3+njoint*3+njoint*6
     final_x = np.zeros((nfrm, size_frame))
-
+    
     final_x[1:,2] = global_heading_diff
     final_x[1:,:2] = velocities_root_xy_no_heading 
     final_x[:,3:3+3*njoint] = np.reshape(positions_no_heading, (nfrm,-1))

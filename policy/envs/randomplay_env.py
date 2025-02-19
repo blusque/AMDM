@@ -4,10 +4,13 @@ from render.realtime.mocap_renderer import PBLMocapViewer
 import torch
 import numpy as np
 import gymnasium as gym
+import os.path as osp
 
 class RandomPlayEnv(base_env.EnvBase):
     NAME = "RandomPlay"
     def __init__(self, config, model, dataset, device):
+        super().__init__(config, model, dataset, device)
+
         self.device = device
         self.config = config
         self.model = model
@@ -29,7 +32,7 @@ class RandomPlayEnv(base_env.EnvBase):
         self.is_rendered = True
         self.num_parallel = config.get('num_parallel',1)
         self.frame_skip = config.get('frame_skip',1)
-        self.max_timestep = config.get('max_timestep',10000)
+        self.max_timestep = config.get('max_timestep', 500)
         self.camera_tracking = config.get('camera_tracking',True)
         self.int_output_dir = config['int_output_dir']
 
@@ -59,12 +62,12 @@ class RandomPlayEnv(base_env.EnvBase):
         self.action_space = gym.spaces.Box(-high, high, dtype=np.float32)
         self.observation_space = gym.spaces.Box(-high, high, dtype=np.float32)
 
-        self.viewer = PBLMocapViewer(
-            self,
-            num_characters=self.num_parallel,
-            target_fps=self.data_fps,
-            camera_tracking=self.camera_tracking,
-        )
+        # self.viewer = PBLMocapViewer(
+        #     self,
+        #     num_characters=self.num_parallel,
+        #     target_fps=self.data_fps,
+        #     camera_tracking=self.camera_tracking,
+        # )
 
         if self.is_rendered:
             self.record_num_frames = np.zeros((self.num_parallel,))
@@ -83,6 +86,12 @@ class RandomPlayEnv(base_env.EnvBase):
             output = self.model.eval_step(condition, self.cur_extra_info)
             #output = self.dataset.unify_rpr_within_frame(condition, output)
         
+        if self.is_rendered:
+            self.record_motion_seq[:,self.record_timestep,:]=output.cpu().detach().numpy()
+            self.record_timestep += 1
+            if self.record_timestep % 30 == 0 and self.record_timestep != 0:
+                self.save_motion()
+
         return output
     
     def reset(self):
@@ -92,10 +101,12 @@ class RandomPlayEnv(base_env.EnvBase):
         self.timestep.fill_(0)
         self.substep.fill_(0)
         self.done.fill_(False)
+        self.record_timestep = 0
         self.reset_initial_frames()
 
 
     def reset_index(self, indices):
+        self.record_timestep = 0
         if indices is None:
             self.root_facing.fill_(0)
             self.root_xz.fill_(0)
