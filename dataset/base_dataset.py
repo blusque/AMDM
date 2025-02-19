@@ -519,9 +519,12 @@ class BaseMotionData(data.Dataset):
             rt = [index_offset + index_key*3, index_offset+index_key*3+3]
 
         elif category == "angle":
-            index_offset = self.angle_dim_lst[0] 
-            index_key = self.joint_names.index(key)
-            rt = [index_offset + index_key*self.data_rot_dim, index_offset + index_key*self.data_rot_dim + self.data_rot_dim]
+            index_offset = self.angle_dim_lst[0]
+            if key is None:
+                rt = [index_offset, index_offset + self.num_jnt*self.data_rot_dim]
+            else:
+                index_key = self.joint_names.index(key)
+                rt = [index_offset + index_key*self.data_rot_dim, index_offset + index_key*self.data_rot_dim + self.data_rot_dim]
         
         elif category == 'offset':
             #index_offset = self.offset_dim_lst[0]

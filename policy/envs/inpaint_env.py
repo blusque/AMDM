@@ -184,16 +184,18 @@ class InpaintEnv(base_env.EnvBase):
             start_frame = edit_dict['full_trajectory']['start_frame']
             end_frame = edit_dict['full_trajectory']['end_frame']
 
-            assert data_end_frame - data_start_frame == end_frame-start_frame
+            assert data_end_frame - data_start_frame == end_frame - start_frame
           
             dim_lst = self.dataset.get_dim_by_key('heading',None)
+            angle_dim_lst = self.dataset.get_dim_by_key('angle',None)
         
         
             file_name = edit_dict['full_trajectory']['val']
             data = self.dataset.load_new_data(file_name)
             
-            self.pre_init_data = torch.tensor(data[None,data_start_frame-1]).to(self.device)
-        
+            self.pre_init_data = torch.tensor(data[None, 30]).to(self.device)
+
+            print(data.shape)
             data = self.dataset.denorm_data(data[data_start_frame:data_end_frame])
 
             #print(data[10:12,self.dataset.joint_dim_lst[0]:self.dataset.joint_dim_lst[1]])
@@ -204,7 +206,9 @@ class InpaintEnv(base_env.EnvBase):
             data = torch.tensor(data).to(self.device).float()
             
             content[:, start_frame:end_frame, :dim_lst[1]] = data[:,:dim_lst[1]]
+            content[:, start_frame:end_frame, angle_dim_lst[1]:] = data[:,angle_dim_lst[1]:]
             mask[:, start_frame:end_frame, :dim_lst[1]] = 1
+            mask[:, start_frame:end_frame, angle_dim_lst[1]:] = 1
 
             #print(self.waypoints.shape)
 
@@ -455,6 +459,7 @@ class InpaintEnv(base_env.EnvBase):
                 cur_extra_info['interact_stop_step'] = 18
             '''
             output = self.model.eval_step_interactive(condition,  self.mask[:,self.record_timestep], self.content[:,self.record_timestep], cur_extra_info)
+
             
         output = output.view(-1,self.frame_dim)
         #output = self.dataset.denorm_data(output.cpu()).to(self.device)

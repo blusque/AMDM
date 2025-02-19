@@ -12,11 +12,11 @@ import model.model_builder as model_builder
 def gen_bvh(model_config_file, model_state_path, out_path, data_file_name, start_frame_index, num_trial_default, step_default, device = 'cuda'):
 
     os.makedirs(out_path, exist_ok=True)
-    data_mode = 'angle' #position,velocity
+    data_mode = 'position' #position,velocity
     root_offset = np.array([0,0,0]) #1200
 
     dataset = dataset_builder.build_dataset(model_config_file, load_full_dataset=True)
-    print('subject:', dataset.subject_name)
+    # print('subject:', dataset.subject_name)
 
     model = model_builder.build_model(model_config_file, dataset, device)
     model.load_state_dict(model_state_path)
@@ -27,12 +27,12 @@ def gen_bvh(model_config_file, model_state_path, out_path, data_file_name, start
     unit_scale_inv = 1.0 / unit_util.unit_conver_scale(dataset.unit)
     offset = dataset.joint_offset * unit_scale_inv
 
-    normed_data, styles = dataset.load_new_data(data_file_name)
-    style = styles[0]
+    normed_data = dataset.load_new_data(data_file_name)
+    # style = styles[0]
     
     start_x = torch.tensor(normed_data[start_frame_index]).to(device).float()
     start = time.time()
-    extra_info = {'style': style}
+    extra_info = {}
     gen_seq = model.eval_seq(start_x, extra_info, step_default, num_trial_default)
     end = time.time()
     print(end - start)
@@ -80,23 +80,25 @@ if __name__ == '__main__':
     
     # file name:
     # data_file_name = './data/100STYLE/BeatChest/BeatChest_FR.bvh'
-    data_file_name = './data/MotionVivid/s004_angry_fw.bvh'
+    # data_file_name = './data/MotionVivid/s004_angry_fw.bvh'
+    data_file_name = './data/Basketball/LH_L0.bvh'
     # starting index:
-    start_index = 0 #3188 #cartwheel
+    start_index = 70 #3188 #cartwheel
 
     # num of frames:
-    step_default = 2000
+    step_default = 1000
 
     # num of clips
     num_trial_default = 6
 
     # path of your checkpoint directory
     # model_name = 'amdm_100style'
-    model_name = 'amdm_motionvivid_004'
+    # model_name = 'amdm_motionvivid_004'
+    model_name = 'amdm_basketball'
     par_path = 'output/base/'
     model_config_file = '{}/{}/config.yaml'.format(par_path, model_name)
    
-    state_dict = torch.load('{}/{}/model_param.pth'.format(par_path,model_name))
+    state_dict = torch.load('{}/{}/_ep55500.pth'.format(par_path,model_name))
     
     # save bvhs under your 
     out_path = '{}/{}/{}_{}step_intro'.format(par_path, model_name, start_index, step_default)  

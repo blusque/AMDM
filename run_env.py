@@ -154,8 +154,8 @@ def run(rank, num_procs, args):
             test_motion_frame = int(test_motion_frame)
             normed_motion = normed_motion[test_motion_frame,:].reshape(-1, normed_motion.shape[-1])
         dataset.motion_flattened = normed_motion
-        dataset.valid_range = [0,dataset.motion_flattened.shape[0]]
-        dataset.valid_idx = np.arange(0,dataset.motion_flattened.shape[0])
+        dataset.valid_range = [0,dataset.motion_flattened.shape[0] - 3]
+        dataset.valid_idx = np.arange(0,dataset.motion_flattened.shape[0] - 3)
     
     else:
         if test_motion_frame != "":

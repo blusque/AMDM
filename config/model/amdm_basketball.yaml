@@ -13,7 +13,7 @@ model_hyperparam:
     layer_num: 15
     #cond_mask_prob: 0
     #cond_emb_size: 256 #condition frame for [class, text, etc]
-    time_emb_size: 64 #time embediing
+    time_emb_size: 128 #time embediing
     hidden_size: 1024
     use_cond: False
     cond_num_cls: 0
