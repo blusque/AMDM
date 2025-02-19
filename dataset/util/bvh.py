@@ -363,14 +363,34 @@ def read_bvh_loco(path, unit, target_fps, root_rot_offset=0, frame_start=None, f
  
     rotations[:,0,...] = np.matmul(global_heading_rot, rotations[:,0,...]) 
 
-    size_frame = 3+njoint*3+njoint*3+njoint*6
+    size_frame = 3+3*6+njoint*3+njoint*3+njoint*6
     final_x = np.zeros((nfrm, size_frame))
 
+    trajectory = np.zeros((nfrm, 3))
+    trajectory[:, :2] = positions[:, root_idx, [0, 2]]
+    trajectory[:, 2] = global_heading
+    
+    local_trajectory = np.zeros((nfrm, 6, 3))
+    sample_step = 3
+    sample_lst = [-3, -2, -1, 1, 2, 3]
+    for idx, i in enumerate(sample_lst):
+        sample_idx = i * sample_step
+        start_idx = max(0, -sample_idx)
+        end_idx = min(nfrm, nfrm - sample_idx)
+        local_trajectory[start_idx:end_idx, idx, 2] = trajectory[start_idx+sample_idx:end_idx+sample_idx, 2] - trajectory[start_idx:end_idx, 2]
+        local_trajectory[start_idx:end_idx, idx, :2] = trajectory[start_idx+sample_idx:end_idx+sample_idx, :2] - trajectory[start_idx:end_idx, :2]
+        local_trajectory_pos = np.zeros((end_idx - start_idx, 3))
+        local_trajectory_pos[:, [0, 2]] = local_trajectory[start_idx:end_idx, idx, :2]
+        local_trajectory_pos = np.matmul(global_heading_rot[start_idx:end_idx], local_trajectory_pos[..., None])
+        local_trajectory[start_idx:end_idx, idx, :2] = local_trajectory_pos[:, [0, 2]].squeeze(axis=-1)
+    local_trajectory = local_trajectory.reshape((nfrm, -1))
+
     final_x[1:,2] = global_heading_diff
-    final_x[1:,:2] = velocities_root_xy_no_heading 
+    final_x[1:,:2] = velocities_root_xy_no_heading
     final_x[:,3:3+3*njoint] = np.reshape(positions_no_heading, (nfrm,-1))
     final_x[1:,3+3*njoint:3+6*njoint] = np.reshape(velocities_no_heading, (nfrm-1,-1))
     final_x[:,3+6*njoint:3+12*njoint] = np.reshape(rotations[..., :, :2, :], (nfrm,-1))
+    final_x[:, 3+12*njoint:] = local_trajectory
     return final_x, motion
 
 

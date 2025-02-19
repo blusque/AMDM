@@ -58,6 +58,7 @@ class BaseTrainer():
 
     def _get_schedule_samp_routines(self, optimizer_config):
         self.anneal_times = optimizer_config['anneal_times']
+        self.anneal_steps = optimizer_config['anneal_steps']
         self.initial_teacher_epochs = optimizer_config.get('initial_teacher_epochs',1)
         self.end_teacher_epochs = optimizer_config.get('end_teacher_epochs',1)
         self.teacher_epochs = optimizer_config['teacher_epochs']
@@ -111,7 +112,7 @@ class BaseTrainer():
             start_x = torch.from_numpy(ref_clip[0]).float().to(self.device)
             
             if ep == 0:
-                model_lst = self.dataset.data_component           
+                model_lst = self.dataset.data_component
                 cur_jnts = []
                 for mode in model_lst:
                     jnts_mode = self.dataset.x_to_jnts(self.dataset.denorm_data(ref_clip), mode=mode)
