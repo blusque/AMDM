@@ -25,8 +25,8 @@ optimizer:
     consist_loss_weight: 0
     anneal_times: 30000
     anneal_steps: 10000
-    initial_lr: 0.001
-    final_lr: 0.0000001
+    initial_lr: 0.00001
+    final_lr: 0.000001
     initial_teacher_epochs: 200000
     end_teacher_epochs: 200
     teacher_epochs: 4

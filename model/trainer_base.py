@@ -12,6 +12,8 @@ import util.logging as logging_util
 import util.save as save_util
 import yaml
 
+import os.path as osp
+
 class BaseTrainer():
     def __init__(self, config, dataset, device):
         self.config = config
@@ -180,11 +182,10 @@ class BaseTrainer():
                         test_out_long_lst.append(jnts_mode)
                         jnts_mode_local = jnts_mode - jnts_mode[:,[0],:]  
                 cur_jnts = np.array(cur_jnts)
-              
+                if should_plot:
+                    self.plot_jnts_fn(cur_jnts.squeeze(), result_ouput_dir+'/{}_{}_long'.format(st_idx,i))
+                self.dataset.save_bvh(osp.join('/home/mjd/AMDM','out{}'.format(i)), cur_denormed_test_data)
             test_out_long_lst = np.array(test_out_long_lst)
             self.plot_traj_fn(test_out_long_lst, result_ouput_dir+'/{}_long'.format(st_idx))
-            
-
-
-
+        
         return NaN_clip_num
