@@ -98,15 +98,12 @@ def run(rank, num_procs, args):
     model = build_model(model_config_file, trainer.dataset, device)
     dataset = build_dataset(model_config_file, load_full_dataset = True)
     if (trained_model_path != ""):
-        try:
-            model = model_builder.build_model(model_config_file, dataset, device)
-            state_dict = torch.load(trained_model_path)
-            model.load_state_dict(state_dict)
-        except:
-            model = torch.load(trained_model_path)
+        model = model_builder.build_model(model_config_file, dataset, device)
+        state_dict = torch.load(trained_model_path)
+        model.load_state_dict(state_dict)
         
         model.to(device)
-        model.eval()
+        # model.eval()
         
     if (mode == "train"):
         copy_config_file(model_config_file, out_model_dir)

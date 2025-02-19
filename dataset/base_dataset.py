@@ -278,6 +278,7 @@ class BaseMotionData(data.Dataset):
                 
             if comp == 'offset':
                 data_piece.append(data[..., self.data_root_dim+self.num_jnt*(6+self.data_rot_dim):])
+        data_piece.append(data[..., self.data_root_dim+12*self.num_jnt:])
         return np.concatenate(data_piece,axis=-1)
     
     def transform_data_flattened(self, data, std, avg):
@@ -344,6 +345,9 @@ class BaseMotionData(data.Dataset):
                 std_piece.append(std[...,idx:idx+(self.num_jnt)*3])
                 avg_piece.append(avg[...,idx:idx+(self.num_jnt)*3])
                 idx += self.num_jnt*3
+        data_piece.append(data[...,self.data_root_dim+12*self.num_jnt:])
+        std_piece.append(std[...,self.data_root_dim+12*self.num_jnt:])
+        avg_piece.append(avg[...,self.data_root_dim+12*self.num_jnt:])
         return np.concatenate(data_piece,axis=-1), np.concatenate(std_piece,axis=-1), np.concatenate(avg_piece,axis=-1)
     
     def get_heading_dr(self,data):
