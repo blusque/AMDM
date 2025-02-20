@@ -1,4 +1,4 @@
-model_name: "AMDM"
+model_name: "AMDM_STYLE"
 
 diffusion:
     sample_mode: "ddpm"
@@ -10,11 +10,12 @@ diffusion:
 
 model_hyperparam:
     layer_num: 15
+    num_styles: 100
     #cond_mask_prob: 0
     #cond_emb_size: 256 #condition frame for [class, text, etc]
     time_emb_size: 128 #time embediing
     hidden_size: 1024
-    use_cond: False
+    use_cond: True
     cond_num_cls: 0
     norm_type: "group_norm"
     act_type: "SiLU"
@@ -26,7 +27,7 @@ optimizer:
     anneal_steps: -1
     initial_lr: 0.001
     final_lr: 0.0000005
-    initial_teacher_epochs: 1400
+    initial_teacher_epochs: 0
     end_teacher_epochs: 100 
     teacher_epochs: 4
     ramping_epochs: 0

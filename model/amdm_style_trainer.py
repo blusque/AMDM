@@ -62,7 +62,7 @@ class AMDMTrainer(trainer_base.BaseTrainer):
         return {"diff_loss":diff_loss.item()}
     
 
-    def compute_student_loss(self, model, sampled_frames, sch_samp_prob, extra_info):
+    def compute_student_loss(self, model, sampled_frames, sch_samp_prob, extra_info: dict):
         #print('student forcing')
         loss_diff_sum, loss_consist_sum = 0, 0
         

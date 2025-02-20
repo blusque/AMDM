@@ -12,6 +12,8 @@ import os.path as osp
 
 class STYLE100(base_dataset.BaseMotionData):
     NAME = 'STYLE100'
+    STYLE_MAP = {
+    }
     def __init__(self, config):
         self.only_forward = False
         if 'info_path' in config['data']:
@@ -61,6 +63,13 @@ class STYLE100(base_dataset.BaseMotionData):
         file_lst = glob.glob(path, recursive = True)
         if self.only_forward:
             file_lst = [f for f in file_lst if 'FR' in f or 'FW' in f.split('/')[-1]]
+        style_idx = 0
+        for file in file_lst:
+            bvh_name = file.split('/')[-1]
+            style = str.lower(bvh_name.split('_')[0])
+            if style not in STYLE100.STYLE_MAP.keys():
+                STYLE100.STYLE_MAP[style] = style_idx
+                style_idx += 1
         return file_lst
     
     def process_data(self, fname):
@@ -82,6 +91,13 @@ class STYLE100(base_dataset.BaseMotionData):
         #x_normed = self.transform_new_data(x_normed)
         return x_normed
     
+    def process_label(self, fname):
+        style = str.lower(fname.split('/')[-1].split('_')[0])
+        style_idx = self.STYLE_MAP[style]
+        style_list = []
+        for i in range(self.cur_length):
+            style_list.append(style_idx)
+        return style_list
     
     def __len__(self):
         return len(self.valid_idx)
@@ -89,7 +105,8 @@ class STYLE100(base_dataset.BaseMotionData):
     def __getitem__(self, idx):
         idx_ = self.valid_idx[idx]
         motion = self.motion_flattened[idx_:idx_+self.rollout]
-        return motion
+        style = self.labels[idx_]
+        return motion, style
     
     def plot_jnts(self, x, path=None):
         return plot_util.plot_multiple(x, self.links, plot_util.plot_lafan1, self.fps, path)

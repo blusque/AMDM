@@ -129,9 +129,9 @@ class AMDM(model_base.BaseModel):
 
 
     def compute_loss(self, last_x, next_x, ts, extra_dict):
-        style = extra_dict.pop('style', None)
+        style = extra_dict.get('style', None)
         style = self.diffusion.get_style_vec(style, self.device)
-        estimated, noise, xt, ts = self.diffusion(last_x, next_x, ts, style, **extra_dict)   
+        estimated, noise, xt, ts = self.diffusion(last_x, next_x, ts, style)   
         if self.estimate_mode == 'x0':
             target = next_x
             pred_x0 = estimated
@@ -516,7 +516,7 @@ class GaussianDiffusion(nn.Module):
     
         return x
     
-    def forward(self, cur_x, next_x, ts, style, **extra_info):
+    def forward(self, cur_x, next_x, ts, style):
         bs = cur_x.shape[0]
         device = cur_x.device
         if ts is None:
