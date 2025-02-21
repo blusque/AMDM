@@ -1,23 +1,25 @@
-env_module: "policy.envs.inpaint_env:InpaintEnv"
+env_module: "policy.envs.inpaint_style_env:InpaintEnv"
 env_name: "InpaintEnv"
 num_parallel: 6
 num_parallel_test: 1
 max_timestep: 640
 frame_skip: 1
 
+model_type: "inpaint"
+
 
 edit:
   repaint_step: 1
-  interact_stop_step: 18 #-1
+  interact_stop_step: -1 #-1
 
-  full:
-    0:
-      interact_stop_step: -1 #-1
-      start_frame: 50 #120 #210 #300
-      end_frame: 131 #171 #360 #510 #600
-      val: data/100STYLE/Kick/Kick_FW.bvh
-      data_start_frame: 225 #301
-      data_end_frame:  230 #541 #601
+  # full:
+  #   0:
+  #     interact_stop_step: -1 #-1
+  #     start_frame: 50 #120 #210 #300
+  #     end_frame: 131 #171 #360 #510 #600
+  #     val: data/100STYLE/Kick/Kick_FW.bvh
+  #     data_start_frame: 225 #301
+  #     data_end_frame:  230 #541 #601
     #0:
     #  interact_stop_step: 18 #-1
     #  start_frame: 10 #120 #210 #300
@@ -81,12 +83,12 @@ edit:
   #    data_start_frame: 401 #301
   #    data_end_frame:  472 #541 #601
   
-  #full_trajectory:
-  #   start_frame: 0 #210 #300
-  #   end_frame: 5000 #510 #600
-  #   val: 'circle' #data/100STYLE/Chicken/Chicken_TR1.bvh
-  #   data_start_frame: 0 #241 #301
-  #   data_end_frame: 5000 #741 #601
+  full_trajectory:
+    start_frame: 0 #210 #300
+    end_frame: 510 #600
+    val: data/100STYLE/Chicken_TR1.bvh
+    data_start_frame: 0 #301
+    data_end_frame: 510 #601
 
   #full_rotation:  #deep fk
   #  start_frame: 0 #210 #300

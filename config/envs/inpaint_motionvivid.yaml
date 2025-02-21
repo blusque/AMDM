@@ -1,4 +1,4 @@
-env_module: "policy.envs.inpaint_env:InpaintEnv"
+env_module: "policy.envs.inpaint_style_env:InpaintEnv"
 env_name: "InpaintEnv"
 num_parallel: 1
 num_parallel_test: 1
@@ -30,12 +30,12 @@ edit:
   #    data_start_frame: 1 #301
   #    data_end_frame: 32 #541 #601
   
-  full_trajectory:
-    start_frame: 0 #210 #300
-    end_frame: 510 #510 #600
-    val: 'data/MotionVivid/s004_angry_fw.bvh'
-    data_start_frame: 0 #241 #301
-    data_end_frame: 510 #741 #601
+  # full_trajectory:
+  #   start_frame: 0 #210 #300
+  #   end_frame: 510 #510 #600
+  #   val: 'data/MotionVivid/s004_angry_fw.bvh'
+  #   data_start_frame: 0 #241 #301
+  #   data_end_frame: 510 #741 #601
 
   #full_rotation:  #deep fk
   #  start_frame: 100 #210 #300
@@ -56,12 +56,12 @@ edit:
   #  start_frame: 0
   #  end_frame: -1 
   
-  # trajectory:
-  #   start_frame: 0
-  #   end_frame: -1 
-  #   shape: circle #line
-  #   radius: 5
-  #   direction: side2 #side1 side2 forward backward
+  trajectory:
+    start_frame: 0
+    end_frame: -1 
+    shape: circle #line
+    radius: 5
+    direction: side2 #side1 side2 forward backward
 
   #root_dxdy:
   #  0:

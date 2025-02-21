@@ -1,5 +1,5 @@
 
-import policy.envs.base_env as base_env
+import policy.envs.base_style_env as base_env
 from render.realtime.mocap_renderer import PBLMocapViewer
 import os.path as osp
 import math

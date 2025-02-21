@@ -206,9 +206,9 @@ class InpaintEnv(base_env.EnvBase):
             data = torch.tensor(data).to(self.device).float()
             
             content[:, start_frame:end_frame, :dim_lst[1]] = data[:,:dim_lst[1]]
-            content[:, start_frame:end_frame, angle_dim_lst[1]:] = data[:,angle_dim_lst[1]:]
+            # content[:, start_frame:end_frame, angle_dim_lst[1]:] = data[:,angle_dim_lst[1]:]
             mask[:, start_frame:end_frame, :dim_lst[1]] = 1
-            mask[:, start_frame:end_frame, angle_dim_lst[1]:] = 1
+            # mask[:, start_frame:end_frame, angle_dim_lst[1]:] = 1
 
             #print(self.waypoints.shape)
 
