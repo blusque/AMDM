@@ -187,13 +187,13 @@ class InpaintEnv(base_env.EnvBase):
             assert data_end_frame - data_start_frame == end_frame - start_frame
           
             dim_lst = self.dataset.get_dim_by_key('heading',None)
-            angle_dim_lst = self.dataset.get_dim_by_key('angle',None)
+            # angle_dim_lst = self.dataset.get_dim_by_key('angle',None)
         
         
             file_name = edit_dict['full_trajectory']['val']
             data = self.dataset.load_new_data(file_name)
             
-            self.pre_init_data = torch.tensor(data[None, 30]).to(self.device)
+            # self.pre_init_data = torch.tensor(data[None, data_start_frame-1]).to(self.device)
 
             print(data.shape)
             data = self.dataset.denorm_data(data[data_start_frame:data_end_frame])
@@ -222,7 +222,7 @@ class InpaintEnv(base_env.EnvBase):
             
             file_name = edit_dict['full_rotation']['val']
             data = self.dataset.load_new_data(file_name)
-            self.pre_init_data = torch.tensor(data[None,data_start_frame-1]).to(self.device)
+            # self.pre_init_data = torch.tensor(data[None,data_start_frame-1]).to(self.device)
             data = torch.tensor(self.dataset.denorm_data(data[data_start_frame:data_end_frame])).to(self.device).float()
             
             content[:, start_frame:end_frame, dim_lst] = data[None,:,dim_lst]
@@ -248,7 +248,7 @@ class InpaintEnv(base_env.EnvBase):
             #dim_lst = list(range(self.dataset.joint_dim_lst[0], self.dataset.joint_dim_lst[1])) + [0,1,2]
             file_name = edit_dict['full_joint']['val']
             data = self.dataset.load_new_data(file_name)
-            self.pre_init_data = torch.tensor(data[None,data_start_frame-1]).to(self.device)
+            # self.pre_init_data = torch.tensor(data[None,data_start_frame-1]).to(self.device)
             data = torch.tensor(self.dataset.denorm_data(data[data_start_frame:data_end_frame])).to(self.device).float()
             
             content[:, start_frame:end_frame, dim_lst] = data[None,:,dim_lst]

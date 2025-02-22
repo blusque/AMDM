@@ -190,7 +190,7 @@ class InpaintEnv(base_env.EnvBase):
         
         
             file_name = edit_dict['full_trajectory']['val']
-            data = self.dataset.load_new_data(file_name)[0]
+            data = self.dataset.load_new_data(file_name)
             
             self.pre_init_data = torch.tensor(data[None,data_start_frame-1]).to(self.device)
         
