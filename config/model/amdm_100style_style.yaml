@@ -27,7 +27,7 @@ optimizer:
     anneal_steps: -1
     initial_lr: 0.001
     final_lr: 0.0000005
-    initial_teacher_epochs: 0
+    initial_teacher_epochs: 1400
     end_teacher_epochs: 100 
     teacher_epochs: 4
     ramping_epochs: 0
