@@ -44,7 +44,6 @@ class EnvBase(gym.Env):
 
         self.model_type = config['model_type']
         print('model type:', self.model_type)
-        print('style:', self.styles[0])
         if config['model_type'] == 'amdm':
             
             self.action_step = config['action_step']

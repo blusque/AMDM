@@ -10,7 +10,7 @@ model_type: "inpaint"
 
 edit:
   repaint_step: 1
-  interact_stop_step: -1 #-1
+  interact_stop_step: -1
 
   # full:
   #   0:
@@ -83,12 +83,12 @@ edit:
   #    data_start_frame: 401 #301
   #    data_end_frame:  472 #541 #601
   
-  full_trajectory:
-    start_frame: 0 #210 #300
-    end_frame: 510 #600
-    val: data/100STYLE/Chicken_TR1.bvh
-    data_start_frame: 0 #301
-    data_end_frame: 510 #601
+  # full_trajectory:
+  #   start_frame: 0 #210 #300
+  #   end_frame: 510 #600
+  #   val: data/100STYLE/Chicken_TR1.bvh
+  #   data_start_frame: 300 #301
+  #   data_end_frame: 810 #601
 
   #full_rotation:  #deep fk
   #  start_frame: 0 #210 #300
@@ -109,10 +109,17 @@ edit:
   #  start_frame: 0
   #  end_frame: -1 
   
-  #trajectory:
+  # trajectory:
   #  start_frame: 0
   #  end_frame: -1 
   #  shape: line #circle #line
+
+  trajectory:
+    start_frame: 0
+    end_frame: -1 
+    shape: circle #line
+    radius: 5
+    direction: forward #side1 side2 forward backward
 
   #root_dxdy:
   #  0:
