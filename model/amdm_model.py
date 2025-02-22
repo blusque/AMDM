@@ -66,7 +66,7 @@ class AMDM(model_base.BaseModel):
             if self.sample_mode == 'ddpm':
                 next_x =  diffusion.sample_ddpm(cur_x, extra_dict, record_process)
             elif self.sample_mode == 'ddim':
-                next_x = diffusion.sample_ddim(cur_x, self.eval_T, 0.0, extra_dict)
+                next_x = diffusion.sample_ddim(cur_x, self.eval_T, self.device, extra_dict)
             else:
                 assert(False), "Unsupported agent: {}".format(self.estimate_mode)
 

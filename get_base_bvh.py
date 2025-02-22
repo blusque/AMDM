@@ -98,7 +98,7 @@ if __name__ == '__main__':
     par_path = 'output/base/'
     model_config_file = '{}/{}/config.yaml'.format(par_path, model_name)
    
-    state_dict = torch.load('{}/{}/_ep55500.pth'.format(par_path,model_name))
+    state_dict = torch.load('{}/{}/model_param.pth'.format(par_path,model_name))
     
     # save bvhs under your 
     out_path = '{}/{}/{}_{}step_intro'.format(par_path, model_name, start_index, step_default)  

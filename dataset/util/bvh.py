@@ -383,9 +383,9 @@ def read_bvh_loco(path, unit, target_fps, root_rot_offset=0, frame_start=None, f
     size_frame = 3+njoint*3+njoint*3+njoint*6
     final_x = np.zeros((nfrm, size_frame))
 
-    trajectory = np.zeros((nfrm, 3))
-    trajectory[:, :2] = positions[:, root_idx, [0, 2]]
-    trajectory[:, 2] = global_heading
+    # trajectory = np.zeros((nfrm, 3))
+    # trajectory[:, :2] = positions[:, root_idx, [0, 2]]
+    # trajectory[:, 2] = global_heading
     
     # local_trajectory = np.zeros((nfrm, 6, 3))
     # sample_step = 3
